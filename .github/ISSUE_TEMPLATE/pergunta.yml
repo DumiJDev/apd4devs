@@ -1,0 +1,27 @@
+name: Pergunta
+description: Uma dúvida concreta sobre proteção de dados em Angola no teu produto
+title: "[Pergunta] "
+labels: ["pergunta"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Obrigado por perguntar! As respostas aqui são da comunidade e **não são aconselhamento jurídico**.
+        Não incluas dados pessoais reais, nomes de clientes nem informação confidencial.
+  - type: textarea
+    id: pergunta
+    attributes:
+      label: A tua pergunta
+      placeholder: "Ex.: Uso Supabase na região eu-central. Preciso de autorização da APD ou basta notificar?"
+    validations:
+      required: true
+  - type: textarea
+    id: contexto
+    attributes:
+      label: Contexto do produto
+      description: Tipo de produto, que dados tratas, onde estão alojados, se já notificaste a APD.
+  - type: input
+    id: seccao
+    attributes:
+      label: Secção do guia relacionada (opcional)
+      placeholder: "Ex.: Cloud e transferências internacionais"

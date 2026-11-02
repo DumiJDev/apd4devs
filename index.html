@@ -2,661 +2,824 @@
 <html lang="pt-AO">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Guia de Proteção de Dados em Angola para Devs</title>
-<meta name="description" content="Guia prático sobre a Lei 22/11 e a APD para quem constrói produtos digitais em Angola.">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Proteção de Dados em Angola para Devs — Guia da Lei 22/11 e da APD</title>
+<meta name="description" content="Guia prático e aberto sobre a Lei n.º 22/11 e a APD para quem constrói produto digital em Angola: notificar vs. autorização, cloud fora de Angola, multas reais, runbook de incidentes e checklist de lançamento.">
+<meta name="keywords" content="APD Angola, Agência de Proteção de Dados, Lei 22/11, proteção de dados Angola, LPDP, RGPD Angola, multas APD, devs angolanos, privacidade">
+<meta name="author" content="Comunidade apd4devs">
+<meta name="theme-color" content="#13294B">
+<link rel="canonical" href="https://dumijdev.github.io/apd4devs/">
+<meta property="og:type" content="article">
+<meta property="og:locale" content="pt_AO">
+<meta property="og:site_name" content="apd4devs">
+<meta property="og:title" content="Proteção de Dados em Angola para Devs">
+<meta property="og:description" content="Notificar ou pedir autorização à APD? Cloud fora de Angola? Multas reais de 2022 a 2026. Guia aberto feito pela comunidade dev angolana.">
+<meta property="og:url" content="https://dumijdev.github.io/apd4devs/">
+<meta property="article:modified_time" content="2026-11-02">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Proteção de Dados em Angola para Devs">
+<meta name="twitter:description" content="Guia aberto sobre a Lei 22/11 e a APD, com verificador interativo e multas reais.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2313294B'/%3E%3Cpath d='M16 6l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V9z' fill='%23E8A317'/%3E%3Cpath d='M12.5 16l2.5 2.5 4.5-5' stroke='%2313294B' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://api.github.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "TechArticle",
+  "headline": "Proteção de Dados em Angola para Devs",
+  "description": "Guia prático sobre a Lei n.º 22/11 (LPDP) e a Agência de Proteção de Dados (APD) para quem constrói produto digital em Angola.",
+  "inLanguage": "pt-AO",
+  "dateModified": "2026-11-02",
+  "url": "https://dumijdev.github.io/apd4devs/",
+  "author": {"@type": "Organization", "name": "Comunidade apd4devs", "url": "https://github.com/DumiJDev/apd4devs"},
+  "about": [{"@type": "Legislation", "name": "Lei n.º 22/11, de 17 de junho — Lei de Proteção de Dados Pessoais", "legislationJurisdiction": "AO"}],
+  "license": "https://github.com/DumiJDev/apd4devs/blob/master/LICENSE"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {"@type": "Question", "name": "Preciso de autorização da APD para guardar dados numa cloud fora de Angola?",
+     "acceptedAnswer": {"@type": "Answer", "text": "É uma transferência internacional (arts. 33.º e 34.º da Lei 22/11). Para países com nível de proteção adequado basta notificar; para os restantes é precisa autorização prévia. A maior multa de 2026 (505 mil USD, Crescer Tech) foi exatamente por guardar dados numa cloud fora de Angola sem notificação nem autorização."}},
+    {"@type": "Question", "name": "Basta ter consentimento do utilizador para cumprir a lei angolana?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Não. Além de uma base legal, a Lei 22/11 exige notificar a APD (ou pedir autorização prévia, para dados sensíveis, crédito, videovigilância, gravação de chamadas, interconexão e certas transferências) antes de iniciar o tratamento."}},
+    {"@type": "Question", "name": "Sou obrigado a ter um DPO em Angola?",
+     "acceptedAnswer": {"@type": "Answer", "text": "A Lei 22/11 não exige um Encarregado de Proteção de Dados. A proposta de revisão de 2025 prevê a figura em certos casos, mas ainda não está em vigor. Na prática, convém ter alguém responsável."}},
+    {"@type": "Question", "name": "Em quanto tempo tenho de notificar a APD de uma violação de dados?",
+     "acceptedAnswer": {"@type": "Answer", "text": "A Circular n.º 2/2024 da APD manda notificar assim que se toma conhecimento; análises jurídicas da circular referem uma notificação inicial em 72 horas. Trata 72 horas como prazo máximo."}},
+    {"@type": "Question", "name": "Quanto já multou a APD?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Entre 2,4 e 2,5 milhões de USD desde 2022, segundo a imprensa angolana. Em 2026, até agosto, foram cerca de 1,1 milhão de USD a seis entidades, o ano mais pesado de sempre."}}
+  ]
+}
+</script>
+
 <style>
+:root{
+  --ink:#13294B;          /* azul-tinta: texto e superfícies fortes */
+  --ink-2:#3C4D66;
+  --ink-3:#6B7A90;
+  --paper:#F5F7FA;
+  --card:#FFFFFF;
+  --line:#D8DEE7;
+  --red:#B3122E;          /* risco, multas */
+  --red-soft:#FBE9EC;
+  --gold:#E8A317;         /* destaque, estrelas */
+  --gold-soft:#FDF3DC;
+  --green:#1D6B4F;        /* ok / só notificação */
+  --green-soft:#E3F2EB;
+  --display:'Bricolage Grotesque', system-ui, sans-serif;
+  --body:'Source Serif 4', Georgia, serif;
+  --mono:'JetBrains Mono', ui-monospace, Menlo, monospace;
+  --radius:10px;
+}
+@media (prefers-color-scheme: dark){
   :root{
-    --bg:#eef1f2;
-    --panel:#e4e9ea;
-    --panel-line:#c7d0d2;
-    --ink:#1c2624;
-    --ink-soft:#4d5b58;
-    --ink-faint:#7c8a87;
-    --accent:#a8671e;
-    --accent-deep:#7d4c14;
-    --accent-soft:#f3e3cf;
-    --risk:#9c3b3b;
-    --risk-soft:#f4e0dd;
-    --safe:#3d6b57;
-    --safe-soft:#dfe9e2;
-    --panel-dark:#1c2624;
-    --panel-dark-ink:#eef1f2;
-    --serif: 'Fraunces', Georgia, serif;
-    --sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-    --mono: 'IBM Plex Mono', 'SFMono-Regular', Menlo, monospace;
-    --maxw: 760px;
+    --ink:#E7ECF4; --ink-2:#B8C3D3; --ink-3:#8796AC;
+    --paper:#0E1A2E; --card:#152440; --line:#2A3B5A;
+    --red:#FF6B7F; --red-soft:#3A1724; --gold:#F4B73A; --gold-soft:#3A2E12;
+    --green:#5CC79A; --green-soft:#12352A;
   }
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:5rem}
+@media (prefers-reduced-motion: reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 1.0625rem/1.7 var(--body);-webkit-font-smoothing:antialiased}
+a{color:inherit;text-decoration-color:var(--gold);text-decoration-thickness:2px;text-underline-offset:3px}
+a:hover{color:var(--red)}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px;border-radius:4px}
+.skip{position:absolute;left:-999px;top:0;background:var(--gold);color:#13294B;padding:.6rem 1rem;z-index:99}
+.skip:focus{left:1rem}
+h1,h2,h3,.ui{font-family:var(--display)}
+h2{font-size:clamp(1.6rem,3vw,2.1rem);line-height:1.15;font-weight:800;letter-spacing:-.02em;margin:0 0 1rem}
+h3{font-size:1.2rem;font-weight:600;margin:2rem 0 .6rem;line-height:1.3}
+p{margin:0 0 1rem}
+ul,ol{padding-left:1.3rem;margin:0 0 1.2rem}
+li{margin-bottom:.45rem}
+code{font-family:var(--mono);font-size:.82em;background:var(--gold-soft);padding:.1em .35em;border-radius:4px}
+pre{font:400 .85rem/1.7 var(--mono);background:#13294B;color:#E7ECF4;padding:1.2rem 1.3rem;border-radius:var(--radius);overflow-x:auto;margin:0 0 1.4rem}
+pre code{background:none;padding:0;font-size:inherit}
+.art{font-family:var(--mono);font-size:.78em;white-space:nowrap;color:var(--ink-2);border:1px solid var(--line);padding:.05em .4em;border-radius:4px}
 
-  *{ box-sizing:border-box; }
-  html{ scroll-behavior:smooth; }
+/* top bar */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:1200px;margin:0 auto;padding:.7rem 1rem;display:flex;align-items:center;gap:1rem}
+.brand{font:800 1.15rem var(--display);text-decoration:none;letter-spacing:-.02em;display:flex;align-items:center;gap:.45rem}
+.brand svg{width:26px;height:26px}
+.top nav{display:flex;gap:1.2rem;margin-left:auto;font:600 .95rem var(--display)}
+.top nav a{text-decoration:none;color:var(--ink-2)}
+.top nav a:hover{color:var(--ink)}
+.btn{font:600 .95rem var(--display);display:inline-flex;align-items:center;gap:.45rem;padding:.6rem 1rem;border-radius:999px;text-decoration:none;border:2px solid var(--ink);color:var(--ink);background:transparent;cursor:pointer;line-height:1.2}
+.btn:hover{background:var(--ink);color:var(--paper)}
+.btn.solid{background:var(--ink);color:var(--paper)}
+.btn.solid:hover{background:var(--red);border-color:var(--red);color:var(--paper)}
+.btn.gold{background:var(--gold);border-color:var(--gold);color:#13294B}
+.btn.gold:hover{filter:brightness(1.05);color:#13294B}
+.btn svg{width:18px;height:18px}
+.star-count{font-family:var(--mono);font-size:.85em;border-left:1px solid currentColor;padding-left:.45rem;opacity:.85}
+@media (max-width:820px){.top nav{display:none}.top .btn{margin-left:auto}}
 
-  body{
-    margin:0;
-    background:var(--bg);
-    color:var(--ink);
-    font-family:var(--sans);
-    font-size:16px;
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-  }
+/* hero */
+.hero{max-width:1200px;margin:0 auto;padding:3.5rem 1rem 3rem;display:grid;grid-template-columns:1.05fr 1fr;gap:3rem;align-items:start}
+.hero h1{font-size:clamp(2.3rem,5.4vw,4.1rem);line-height:1.02;letter-spacing:-.035em;font-weight:800;margin:0 0 1.2rem}
+.hero h1 .strike{position:relative;white-space:nowrap}
+.hero h1 .strike::after{content:"";position:absolute;left:-2%;right:-2%;top:54%;height:.12em;background:var(--red);transform:rotate(-2deg)}
+.lede{font-size:1.2rem;color:var(--ink-2);max-width:52ch;margin-bottom:1.6rem}
+.cta-row{display:flex;flex-wrap:wrap;gap:.7rem;margin-bottom:2rem}
+.facts{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;border-top:2px solid var(--ink);padding-top:1rem;font-size:.95rem;color:var(--ink-2)}
+.facts b{display:block;font:800 1.5rem/1.1 var(--display);color:var(--ink);letter-spacing:-.02em}
+@media (max-width:920px){.hero{grid-template-columns:1fr;gap:2rem;padding-top:2.2rem}}
+@media (max-width:480px){.facts{grid-template-columns:1fr 1fr}}
 
-  a{ color:var(--accent-deep); text-decoration-thickness:1px; text-underline-offset:2px; }
-  a:hover{ color:var(--accent); }
+/* checker */
+.checker{background:var(--card);border:2px solid var(--ink);border-radius:16px;padding:1.4rem;box-shadow:8px 8px 0 var(--gold)}
+.checker h2{font-size:1.35rem;margin-bottom:.3rem}
+.checker .hint{font-size:.95rem;color:var(--ink-3);margin-bottom:1rem}
+.q{display:flex;gap:.7rem;align-items:flex-start;padding:.55rem .6rem;border-radius:8px;cursor:pointer;font:400 .97rem/1.4 var(--display)}
+.q:hover{background:var(--paper)}
+.q input{width:1.15rem;height:1.15rem;margin-top:.12rem;accent-color:var(--red);flex:none}
+.verdict{margin-top:1rem;border-radius:12px;padding:1rem 1.1rem;background:var(--green-soft);border:1.5px solid var(--green);transition:background .25s,border-color .25s}
+.verdict.auth{background:var(--red-soft);border-color:var(--red)}
+.verdict .v-title{font:800 1.15rem var(--display);margin:0 0 .3rem}
+.verdict ul{margin:.4rem 0 0;font-size:.93rem}
+.verdict li{margin-bottom:.3rem}
+.verdict .prec{font-size:.88rem;color:var(--ink-2);margin:.5rem 0 0}
 
-  /* ---------- Hero ---------- */
-  .hero{
-    background:var(--panel-dark);
-    color:var(--panel-dark-ink);
-    padding:4.5rem 1.5rem 3rem;
-    border-bottom:6px solid var(--accent);
-  }
-  .hero-inner{ max-width:960px; margin:0 auto; }
-  .hero-eyebrow{
-    font-family:var(--mono);
-    font-size:.8rem;
-    color:#c9b28a;
-    margin:0 0 1rem;
-  }
-  .hero h1{
-    font-family:var(--serif);
-    font-optical-sizing:auto;
-    font-weight:600;
-    font-size:clamp(2.1rem, 5vw, 3.4rem);
-    line-height:1.08;
-    margin:0 0 .9rem;
-    max-width:14ch;
-  }
-  .hero p.sub{
-    font-size:1.15rem;
-    color:#c7d2ce;
-    max-width:58ch;
-    margin:0 0 2.2rem;
-  }
-  .stat-strip{
-    display:flex;
-    flex-wrap:wrap;
-    gap:0;
-    border-top:1px solid #38443f;
-    margin-top:1rem;
-  }
-  .stat{
-    flex:1 1 200px;
-    padding:1.1rem 1.4rem 0;
-    border-right:1px solid #38443f;
-  }
-  .stat:last-child{ border-right:none; }
-  .stat .n{
-    font-family:var(--mono);
-    font-size:1.7rem;
-    color:var(--accent);
-    display:block;
-  }
-  .stat .l{
-    font-size:.82rem;
-    color:#9fb0aa;
-    display:block;
-    margin-top:.2rem;
-    padding-bottom:1.1rem;
-  }
+/* layout */
+.layout{max-width:1200px;margin:0 auto;padding:1rem 1rem 4rem;display:grid;grid-template-columns:230px minmax(0,1fr);gap:3rem}
+.toc{position:sticky;top:5rem;align-self:start;font:400 .92rem/1.35 var(--display);max-height:calc(100vh - 6rem);overflow:auto}
+.toc p{font-weight:600;margin:0 0 .6rem;color:var(--ink-3)}
+.toc ol{list-style:none;margin:0;padding:0;border-left:2px solid var(--line)}
+.toc li{margin:0}
+.toc a{display:block;padding:.38rem .8rem;margin-left:-2px;border-left:2px solid transparent;text-decoration:none;color:var(--ink-2)}
+.toc a:hover,.toc a.active{color:var(--ink);border-left-color:var(--red);font-weight:600}
+.progress{height:4px;background:var(--line);border-radius:4px;margin-top:1rem;overflow:hidden}
+.progress span{display:block;height:100%;width:0;background:var(--red)}
+@media (max-width:920px){.layout{grid-template-columns:minmax(0,1fr)}.toc{display:none}}
+main{max-width:72ch;min-width:0}
+main section{padding-top:2.4rem;margin-top:2.4rem;border-top:1px solid var(--line)}
+main section:first-child{border-top:0;margin-top:0}
+.sec-head{display:flex;justify-content:space-between;gap:1rem;align-items:baseline}
+.suggest{font:600 .82rem var(--display);color:var(--ink-3);white-space:nowrap;text-decoration:none}
+.suggest:hover{color:var(--red)}
 
-  /* ---------- Layout ---------- */
-  .layout{
-    max-width:1180px;
-    margin:0 auto;
-    display:grid;
-    grid-template-columns:250px minmax(0,1fr);
-    gap:2.5rem;
-    padding:3rem 1.5rem 5rem;
-  }
-  nav.toc{ align-self:start; position:sticky; top:1.5rem; }
-  nav.toc .toc-title{
-    font-family:var(--mono);
-    font-size:.72rem;
-    letter-spacing:.03em;
-    color:var(--ink-faint);
-    margin-bottom:.8rem;
-  }
-  nav.toc ol{
-    list-style:none;
-    margin:0; padding:0;
-    counter-reset:toc;
-    border-left:2px solid var(--panel-line);
-  }
-  nav.toc li{
-    counter-increment:toc;
-    margin:0;
-  }
-  nav.toc a{
-    display:block;
-    padding:.42rem .9rem;
-    font-size:.88rem;
-    color:var(--ink-soft);
-    text-decoration:none;
-    border-left:2px solid transparent;
-    margin-left:-2px;
-  }
-  nav.toc a::before{
-    content:counter(toc) ". ";
-    font-family:var(--mono);
-    color:var(--ink-faint);
-    margin-right:.15rem;
-  }
-  nav.toc a:hover, nav.toc a.active{
-    color:var(--accent-deep);
-    border-left:2px solid var(--accent);
-    background:var(--accent-soft);
-  }
+.tldr{background:#13294B;color:#F5F7FA;border-radius:16px;padding:1.8rem}
+.tldr h2{color:#E8A317}
+.tldr a,.tldr strong{color:#fff}
+.tldr li{margin-bottom:.7rem}
 
-  main{ max-width:var(--maxw); }
+.table-wrap{overflow-x:auto;margin:0 0 1.4rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+table{border-collapse:collapse;width:100%;font:400 .93rem/1.45 var(--display)}
+th,td{text-align:left;padding:.7rem .85rem;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;background:var(--paper)}
+tr:last-child td{border-bottom:0}
 
-  .tldr{
-    background:var(--panel);
-    border:1px solid var(--panel-line);
-    border-left:4px solid var(--accent);
-    border-radius:2px;
-    padding:1.5rem 1.6rem;
-    margin:0 0 3rem;
-  }
-  .tldr h2{ margin-top:0; }
-  .tldr ul{ margin-bottom:.6rem; }
-  .tldr li{ margin-bottom:.55rem; }
+.callout{border-radius:var(--radius);padding:1rem 1.15rem;margin:0 0 1.4rem;background:var(--gold-soft);border:1px solid var(--gold);font-size:1rem}
+.callout.warn{background:var(--red-soft);border-color:var(--red)}
+.callout.ok{background:var(--green-soft);border-color:var(--green)}
+.callout p:last-child{margin:0}
 
-  section{ margin-bottom:3.4rem; scroll-margin-top:1.5rem; }
+.pill{display:inline-block;font:600 .78rem var(--display);padding:.15rem .6rem;border-radius:999px;background:var(--green-soft);color:var(--green)}
+.pill.auth{background:var(--red-soft);color:var(--red)}
+.pill.new{background:var(--gold-soft);color:#7A5200}
+@media (prefers-color-scheme: dark){.pill.new{color:var(--gold)}}
 
-  h2{
-    font-family:var(--serif);
-    font-weight:600;
-    font-size:1.7rem;
-    line-height:1.25;
-    margin:0 0 1.1rem;
-    padding-bottom:.6rem;
-    border-bottom:1px solid var(--panel-line);
-    display:flex;
-    align-items:baseline;
-    gap:.6rem;
-  }
-  h2 .num{
-    font-family:var(--mono);
-    font-size:1rem;
-    color:var(--accent);
-    font-weight:500;
-  }
-  h3{
-    font-family:var(--sans);
-    font-weight:700;
-    font-size:1.12rem;
-    margin:1.8rem 0 .7rem;
-    color:var(--ink);
-  }
-  p{ margin:0 0 1rem; color:var(--ink); }
-  strong{ color:var(--ink); }
+/* checklists */
+.checklist{list-style:none;padding:0}
+.checklist li{display:flex;gap:.75rem;padding:.65rem .8rem;border:1px solid var(--line);border-radius:var(--radius);background:var(--card);margin-bottom:.5rem;cursor:pointer;font:400 .98rem/1.45 var(--display)}
+.checklist input{width:1.2rem;height:1.2rem;flex:none;margin-top:.1rem;accent-color:var(--green)}
+.checklist li:has(input:checked){background:var(--green-soft);border-color:var(--green)}
+.checklist li:has(input:checked) span{text-decoration:line-through;text-decoration-color:var(--green);color:var(--ink-2)}
+.check-meta{display:flex;justify-content:space-between;align-items:center;font:600 .9rem var(--display);margin-bottom:.6rem;color:var(--ink-2)}
+.check-meta button{font:inherit;background:none;border:0;color:var(--ink-3);cursor:pointer;text-decoration:underline}
 
-  ul, ol{ padding-left:1.3rem; margin:0 0 1.1rem; }
-  li{ margin-bottom:.4rem; }
+/* fines */
+.filters{display:flex;flex-wrap:wrap;gap:.45rem;margin-bottom:1rem}
+.filters button{font:600 .88rem var(--display);padding:.4rem .85rem;border-radius:999px;border:1.5px solid var(--line);background:var(--card);color:var(--ink-2);cursor:pointer}
+.filters button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.fines{list-style:none;padding:0;margin:0 0 1.4rem}
+.fine{display:grid;grid-template-columns:3.2rem 1fr;gap:.2rem 1rem;padding:.85rem 0;border-bottom:1px solid var(--line)}
+.fine[hidden]{display:none}
+.fine .yr{font:600 .9rem var(--mono);color:var(--ink-3);padding-top:.15rem}
+.fine .who{font:600 1.02rem/1.3 var(--display)}
+.fine .amt{font-family:var(--mono);font-weight:600;color:var(--red);margin-left:.4rem;font-size:.92rem}
+.fine .bar{grid-column:2;height:8px;border-radius:4px;background:var(--red);width:calc(var(--v) / 525 * 100%);min-width:4px;opacity:.85}
+.fine .bar.na{background:repeating-linear-gradient(90deg,var(--ink-3) 0 4px,transparent 4px 8px);width:30%;opacity:.5}
+.fine .why{grid-column:2;font-size:.93rem;color:var(--ink-2);margin:0}
 
-  code{
-    font-family:var(--mono);
-    background:var(--panel);
-    border:1px solid var(--panel-line);
-    padding:.1rem .35rem;
-    border-radius:3px;
-    font-size:.85em;
-  }
-  pre{
-    background:var(--panel-dark);
-    color:#d9e6e0;
-    font-family:var(--mono);
-    font-size:.84rem;
-    line-height:1.65;
-    padding:1.2rem 1.3rem;
-    border-radius:4px;
-    overflow-x:auto;
-    margin:0 0 1.3rem;
-  }
-  pre code{ background:none; border:none; padding:0; color:inherit; }
+/* faq + questions */
+details{border:1px solid var(--line);border-radius:var(--radius);background:var(--card);margin-bottom:.6rem}
+summary{cursor:pointer;padding:.85rem 1rem;font:600 1.02rem/1.35 var(--display);list-style:none;display:flex;justify-content:space-between;gap:1rem}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-weight:800;color:var(--red)}
+details[open] summary::after{content:"–"}
+details > div{padding:0 1rem .9rem}
+.issues{list-style:none;padding:0;margin:0 0 1rem}
+.issues li{display:flex;justify-content:space-between;gap:1rem;padding:.75rem 0;border-bottom:1px solid var(--line);font:400 .98rem/1.4 var(--display)}
+.issues .meta{color:var(--ink-3);font-size:.85rem;white-space:nowrap}
+.issues .empty{color:var(--ink-2);display:block}
 
-  /* citation badge for law articles */
-  .art{
-    font-family:var(--mono);
-    font-size:.82em;
-    background:var(--accent-soft);
-    color:var(--accent-deep);
-    padding:.05rem .4rem;
-    border-radius:3px;
-    white-space:nowrap;
-  }
-
-  blockquote.callout{
-    margin:0 0 1.3rem;
-    padding:.9rem 1.1rem;
-    border-radius:2px;
-    border-left:3px solid var(--ink-faint);
-    background:var(--panel);
-    font-size:.95rem;
-  }
-  blockquote.callout.tip{ border-left-color:var(--safe); }
-  blockquote.callout.warning{ border-left-color:var(--risk); background:var(--risk-soft); }
-  blockquote.callout p{ margin:0; }
-
-  .risk-tag{
-    display:inline-block;
-    font-family:var(--mono);
-    font-size:.72rem;
-    padding:.15rem .5rem;
-    border-radius:20px;
-    margin-bottom:.7rem;
-    letter-spacing:.02em;
-  }
-  .risk-tag.alto{ background:var(--risk-soft); color:var(--risk); }
-  .risk-tag.medio{ background:var(--accent-soft); color:var(--accent-deep); }
-  .risk-tag.baixo{ background:var(--safe-soft); color:var(--safe); }
-
-  table{
-    width:100%;
-    border-collapse:collapse;
-    margin:0 0 1.4rem;
-    font-size:.92rem;
-  }
-  th, td{
-    text-align:left;
-    padding:.6rem .7rem;
-    border-bottom:1px solid var(--panel-line);
-    vertical-align:top;
-  }
-  th{
-    font-family:var(--mono);
-    font-size:.75rem;
-    text-transform:none;
-    color:var(--ink-faint);
-    border-bottom:2px solid var(--ink);
-  }
-  tr:hover td{ background:var(--panel); }
-
-  table.fines td.amount{
-    font-family:var(--mono);
-    text-align:right;
-    white-space:nowrap;
-  }
-  table.fines td.amount.big{ color:var(--risk); font-weight:600; }
-  table.fines tr.highlight td{ background:var(--risk-soft); }
-
-  .checklist{ list-style:none; padding-left:0; }
-  .checklist li{
-    display:flex;
-    align-items:flex-start;
-    gap:.65rem;
-    padding:.35rem 0;
-    cursor:pointer;
-    user-select:none;
-  }
-  .checklist li .box{
-    flex:0 0 auto;
-    width:1.05rem; height:1.05rem;
-    border:2px solid var(--ink-faint);
-    border-radius:3px;
-    margin-top:.18rem;
-    position:relative;
-  }
-  .checklist li.checked .box{ background:var(--safe); border-color:var(--safe); }
-  .checklist li.checked .box::after{
-    content:"";
-    position:absolute; left:3px; top:0px;
-    width:4px; height:8px;
-    border:solid white;
-    border-width:0 2px 2px 0;
-    transform:rotate(45deg);
-  }
-  .checklist li.checked span.txt{ color:var(--ink-faint); text-decoration:line-through; }
-
-  footer{
-    background:var(--panel-dark);
-    color:#b9c6c1;
-    padding:3rem 1.5rem;
-  }
-  footer .footer-inner{ max-width:760px; margin:0 auto; }
-  footer h2{ color:var(--panel-dark-ink); border-bottom-color:#38443f; }
-  footer a{ color:#e3c795; }
-  footer p{ color:#b9c6c1; font-size:.92rem; }
-
-  @media (max-width: 860px){
-    .layout{ grid-template-columns:1fr; }
-    nav.toc{ position:static; border-bottom:1px solid var(--panel-line); padding-bottom:1.5rem; margin-bottom:1rem;}
-  }
+/* community band */
+.community{background:#13294B;color:#F5F7FA}
+.community-in{max-width:1200px;margin:0 auto;padding:3.5rem 1rem;display:grid;grid-template-columns:1.2fr 1fr;gap:3rem}
+.community h2{color:#fff;font-size:clamp(1.8rem,3.6vw,2.6rem)}
+.community p{color:#D5DDE8}
+.community .btn{border-color:#F5F7FA;color:#F5F7FA}
+.community .btn:hover{background:#F5F7FA;color:#13294B}
+.community .btn.gold,.community .btn.gold:hover{background:#E8A317;border-color:#E8A317;color:#13294B}
+.ways{list-style:none;padding:0;margin:0}
+.ways li{padding:.9rem 0;border-bottom:1px solid #2E4468}
+.ways b{font-family:var(--display);display:block;color:#E8A317}
+.ways a{color:#fff}
+.ways code{background:#2E4468;color:#fff}
+@media (max-width:820px){.community-in{grid-template-columns:1fr;gap:1.5rem}}
+footer{max-width:1200px;margin:0 auto;padding:2.5rem 1rem 3rem;font-size:.92rem;color:var(--ink-2)}
+footer h2{font-size:1.1rem}
 </style>
 </head>
 <body>
+<a class="skip" href="#guia">Saltar para o guia</a>
 
-<header class="hero">
-  <div class="hero-inner">
-    <p class="hero-eyebrow">// guia técnico · lei n.º 22/11 · agência de proteção de dados</p>
-    <h1>Proteção de dados em Angola, para quem escreve código</h1>
-    <p class="sub">Como não seres apanhado de surpresa pela APD — dos tipos de dados às situações do dia a dia, com casos reais de multas para aprenderes com os erros dos outros.</p>
-    <div class="stat-strip">
-      <div class="stat"><span class="n">$2,5M+</span><span class="l">aplicados pela APD em multas desde 2022</span></div>
-      <div class="stat"><span class="n">$505K</span><span class="l">maior multa (2026) — dados guardados em cloud fora de Angola</span></div>
-      <div class="stat"><span class="n">~15</span><span class="l">empresas já sancionadas publicamente</span></div>
-      <div class="stat"><span class="n">2026</span><span class="l">ano recorde de fiscalização, +110% vs. 2022</span></div>
-    </div>
+<header class="top">
+  <div class="top-in">
+    <a class="brand" href="#" aria-label="apd4devs, início">
+      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="#13294B"/><path d="M16 6l8 3v6c0 5-3.4 9.3-8 11-4.6-1.7-8-6-8-11V9z" fill="#E8A317"/><path d="M12.5 16l2.5 2.5 4.5-5" stroke="#13294B" stroke-width="2.4" fill="none" stroke-linecap="round"/></svg>
+      apd4devs
+    </a>
+    <nav aria-label="Principal">
+      <a href="#verificador">Verificador</a>
+      <a href="#guia">Guia</a>
+      <a href="#multas">Multas</a>
+      <a href="#perguntas">Perguntas</a>
+      <a href="#contribuir">Contribuir</a>
+    </nav>
+    <a class="btn gold" href="https://github.com/DumiJDev/apd4devs" target="_blank" rel="noopener" data-star>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+      Dar estrela<span class="star-count" hidden></span>
+    </a>
   </div>
 </header>
 
-<div class="layout">
+<div class="hero">
+  <div>
+    <h1>O teu deploy já foi <span class="strike">notificado</span> à APD?</h1>
+    <p class="lede">Guia aberto sobre a Lei n.º 22/11 para quem escreve código em Angola: o que notificar, quando pedir autorização, onde alojar dados e quanto custa errar — com casos reais de multas.</p>
+    <div class="cta-row">
+      <a class="btn solid" href="#guia">Ler o guia</a>
+      <a class="btn" href="https://github.com/DumiJDev/apd4devs/issues/new?template=pergunta.yml" target="_blank" rel="noopener">Fazer uma pergunta</a>
+    </div>
+    <div class="facts">
+      <p><b>≈ $2,5M</b>em multas da APD desde 2022</p>
+      <p><b>$505K</b>maior multa de 2026: cloud fora de Angola</p>
+      <p><b>$1,1M</b>só em 2026, até agosto — ano recorde</p>
+    </div>
+  </div>
 
-<nav class="toc">
-  <p class="toc-title">ÍNDICE</p>
-  <ol id="toc-list">
-    <li><a href="#s1">TL;DR — o essencial</a></li>
-    <li><a href="#s2">O panorama legal</a></li>
-    <li><a href="#s3">A quem se aplica</a></li>
-    <li><a href="#s4">Dados pessoais vs. sensíveis</a></li>
-    <li><a href="#s5">Bases legais</a></li>
-    <li><a href="#s6">Notificar vs. autorizar</a></li>
-    <li><a href="#s7">Situações do dia a dia</a></li>
-    <li><a href="#s8">Checklist de segurança</a></li>
-    <li><a href="#s9">Runbook de incidentes</a></li>
-    <li><a href="#s10">Direitos dos titulares</a></li>
-    <li><a href="#s11">Como notificar a APD</a></li>
-    <li><a href="#s12">Sala de troféus (multas)</a></li>
-    <li><a href="#s13">Precisas de um DPO?</a></li>
-    <li><a href="#s14">Checklist de lançamento</a></li>
-    <li><a href="#s15">Outras leis a vigiar</a></li>
-    <li><a href="#s16">Recursos e contactos</a></li>
-  </ol>
-</nav>
-
-<main>
-
-<div class="tldr">
-<h2 id="s1"><span class="num">1</span>TL;DR — o essencial em 90 segundos</h2>
-<ul>
-<li>A lei chama-se <strong>Lei n.º 22/11, de 17 de junho</strong> (LPDP). É de 2011, mas só ganhou dentes a sério a partir de <strong>2019</strong>, quando o regulador entrou em funcionamento.</li>
-<li>O regulador é a <strong>APD — Agência de Proteção de Dados</strong>. Desde 2022 já aplicou mais de <strong>2,5 milhões de dólares</strong> em coimas a cerca de 15 empresas — e <strong>2026 é o ano recorde</strong>.</li>
-<li>A tua obrigação central <strong>não é só pedir consentimento</strong> — é <strong>notificar (ou pedir autorização) à APD</strong> antes de tratares dados pessoais. É diferente do RGPD/LGPD e é o erro nº 1.</li>
-<li><strong>Guardar dados de utilizadores angolanos numa cloud fora de Angola sem autorização é, de longe, a infração mais cara.</strong> A maior coima de 2026 ($505 mil) foi exatamente por isso.</li>
-<li>Não existe obrigação legal explícita de teres um DPO — mas é fortemente recomendado ter alguém responsável.</li>
-<li>Multas para empresas são <strong>triplicadas</strong> face aos valores base da lei — podendo, só pelo texto legal, ir até $450 mil por infração.</li>
-</ul>
-<p>Se só vais ler duas secções antes de lançares o teu produto: <a href="#s6">secção 6</a> e <a href="#s14">secção 14</a>.</p>
+  <form class="checker" id="verificador" aria-labelledby="chk-title" onsubmit="return false">
+    <h2 id="chk-title">Notificar ou pedir autorização?</h2>
+    <p class="hint">Marca o que o teu produto faz. O resultado atualiza-se sozinho.</p>
+    <label class="q"><input type="checkbox" value="cloud">Guardo ou processo dados fora de Angola (cloud, backups, logs, SaaS)</label>
+    <label class="q"><input type="checkbox" value="sens">Trato saúde, biometria, religião, política, sindicatos ou vida sexual</label>
+    <label class="q"><input type="checkbox" value="cred">Trato salários, crédito ou solvabilidade sem consentimento expresso</label>
+    <label class="q"><input type="checkbox" value="cctv">Uso videovigilância ou gravo chamadas</label>
+    <label class="q"><input type="checkbox" value="auto">Tomo decisões automáticas com efeito relevante (scoring, aprovação)</label>
+    <label class="q"><input type="checkbox" value="inter">Cruzo bases de dados com outra entidade</label>
+    <label class="q"><input type="checkbox" value="mkt">Envio marketing por email, SMS ou push</label>
+    <div class="verdict" id="verdict" aria-live="polite"></div>
+  </form>
 </div>
 
-<section id="s2">
-<h2><span class="num">2</span>O panorama legal</h2>
-<p>Angola não tem "uma lei", tem um pequeno ecossistema. Para efeitos de dev, o que interessa:</p>
-<table>
-<tr><th>Diploma</th><th>O que regula</th><th>Porque importa</th></tr>
-<tr><td><strong>Lei n.º 22/11</strong> (LPDP)</td><td>Regras gerais de tratamento de dados pessoais</td><td>É a lei principal deste guia</td></tr>
-<tr><td><strong>Lei n.º 23/11</strong> (LCE)</td><td>Comunicações eletrónicas e serviços da sociedade da informação</td><td>Marketing eletrónico, telecom, notificação de incidentes (<span class="art">art. 55.º</span>)</td></tr>
-<tr><td><strong>Lei n.º 7/17</strong> (LRSI)</td><td>Segurança de redes e sistemas informáticos</td><td>Medidas de segurança e notificação de incidentes (<span class="art">art. 35.º</span>)</td></tr>
-<tr><td><strong>Decretos 256/25, 258/25, 263/25</strong> (dez. 2025)</td><td>Estratégia, Conselho e Centro Nacional de Cibersegurança</td><td>Novo aparato institucional, ainda a arrancar em 2026</td></tr>
-<tr><td><strong>Lei n.º 6/26</strong> (Fake News, em vigor desde ago. 2026)</td><td>Moderação de conteúdo e plataformas digitais</td><td>Relevante se tens reviews/comentários de utilizadores</td></tr>
-</table>
-<p>A <strong>APD</strong> é uma pessoa coletiva de direito público, criada pelo Decreto Presidencial n.º 214/16, mas que só entrou em funcionamento efetivo em <strong>outubro de 2019</strong> — por isso a maior parte das multas só aparece a partir de 2022. Tem sete membros e pode fiscalizar, registar tratamentos, emitir autorizações, receber queixas e <strong>aplicar multas diretamente</strong> (recorríveis, mas sem precisar de processo judicial prévio).</p>
-<blockquote class="callout tip"><p>💡 A APD publica regularmente "Deliberações sobre Processos Contravencionais" no seu site — uma lista pública de quem foi multado e porquê. Vale a pena seguir como quem segue um changelog.</p></blockquote>
+<div class="layout">
+  <nav class="toc" aria-label="Índice do guia">
+    <p>Neste guia</p>
+    <ol>
+      <li><a href="#tldr">O essencial</a></li>
+      <li><a href="#panorama">Panorama legal</a></li>
+      <li><a href="#ambito">A quem se aplica</a></li>
+      <li><a href="#tipos-de-dados">Pessoais vs. sensíveis</a></li>
+      <li><a href="#bases-legais">Bases legais</a></li>
+      <li><a href="#notificar-autorizar">Notificar vs. autorizar</a></li>
+      <li><a href="#situacoes">Situações do dia a dia</a></li>
+      <li><a href="#seguranca">Segurança técnica</a></li>
+      <li><a href="#incidentes">Runbook de incidentes</a></li>
+      <li><a href="#direitos">Direitos dos titulares</a></li>
+      <li><a href="#como-notificar">Como notificar a APD</a></li>
+      <li><a href="#multas">Multas reais</a></li>
+      <li><a href="#dpo">Precisas de um DPO?</a></li>
+      <li><a href="#o-que-vem">O que vem aí</a></li>
+      <li><a href="#lancamento">Checklist de lançamento</a></li>
+      <li><a href="#faq">Perguntas frequentes</a></li>
+      <li><a href="#perguntas">Perguntas da comunidade</a></li>
+      <li><a href="#fontes">Fontes e contactos</a></li>
+    </ol>
+    <div class="progress" aria-hidden="true"><span id="read-progress"></span></div>
+  </nav>
+
+<main id="guia">
+
+<section id="tldr" class="tldr">
+  <h2>O essencial em 90 segundos</h2>
+  <ul>
+    <li>A lei é a <strong>Lei n.º 22/11, de 17 de junho</strong> (LPDP). É de 2011, mas só ganhou dentes quando o regulador arrancou, em <strong>outubro de 2019</strong>.</li>
+    <li>O regulador é a <strong>APD — Agência de Proteção de Dados</strong>. Multa diretamente, sem tribunal, e publica quem multou. Desde 2022 já foram cerca de <strong>2,5 milhões de USD</strong>; <strong>2026 é o ano recorde</strong>.</li>
+    <li>A obrigação central não é só o consentimento: é <strong>notificar a APD, ou pedir autorização prévia, antes de tratares dados</strong>. É o que mais distingue Angola do RGPD/LGPD e o erro n.º 1.</li>
+    <li><strong>Dados de angolanos numa cloud fora de Angola sem autorização</strong> é a infração isolada mais cara: 505 mil USD à Crescer Tech em 2026.</li>
+    <li>Multas para empresas são <strong>triplicadas</strong> face aos valores base; o texto legal chega a 450 mil USD por infração, e a APD já foi além disso somando infrações.</li>
+    <li>A lei está a ser <strong>revista</strong>: a proposta de 2025 traz notificação de violações em 72h, encarregado de proteção de dados e regras para IA. Ainda não está em vigor (<a href="#o-que-vem">ver o que vem aí</a>).</li>
+  </ul>
+  <p>Só tens cinco minutos? Lê <a href="#notificar-autorizar">notificar vs. autorizar</a> e a <a href="#lancamento">checklist de lançamento</a>.</p>
 </section>
 
-<section id="s3">
-<h2><span class="num">3</span>A quem se aplica isto</h2>
-<p>Curto: <strong>quase certamente a ti.</strong> A lei aplica-se ao tratamento de dados feito por qualquer responsável sediado em Angola, no âmbito de atividades de um responsável estabelecido em Angola (mesmo com sede noutro país), ou por quem <strong>use meios situados em Angola</strong> para recolher, registar ou fazer transitar dados — servidores, CDNs, ou pontos de recolha em território angolano contam.</p>
-<p>Ou seja: <strong>não precisas de ter sede em Angola para estares sujeito à LPDP.</strong> Se não tens presença lá mas usas "meios" no país (um formulário acedido a partir de Angola, um app nas lojas angolanas), a lei pede que nomeies um <strong>representante estabelecido em Angola</strong> perante a APD.</p>
-<p><strong>Exceções:</strong> pessoa singular em atividades exclusivamente pessoais/domésticas, segredo de Estado/justiça, e dados de militares geridos internamente.</p>
+<section id="panorama">
+  <div class="sec-head"><h2>O panorama legal</h2><a class="suggest" data-sec="Panorama legal" href="#">Sugerir correção</a></div>
+  <p>Angola não tem "uma lei", tem um pequeno ecossistema. O que interessa a quem faz produto:</p>
+  <div class="table-wrap"><table>
+    <tr><th>Diploma</th><th>O que regula</th><th>Porque importa</th></tr>
+    <tr><td><strong>Lei n.º 22/11</strong> (LPDP)</td><td>Regras gerais de tratamento de dados pessoais</td><td>A lei principal deste guia</td></tr>
+    <tr><td><strong>Lei n.º 23/11</strong> (LCE)</td><td>Comunicações eletrónicas e sociedade da informação</td><td>Marketing eletrónico; telecoms notificam incidentes ao INACOM (<span class="art">art. 55.º</span>)</td></tr>
+    <tr><td><strong>Lei n.º 7/17</strong> (LRSI)</td><td>Proteção de redes e sistemas informáticos</td><td>Medidas de segurança e notificação de incidentes (<span class="art">art. 35.º</span>)</td></tr>
+    <tr><td><strong>Circular APD n.º 2/2024</strong></td><td>Notificação de incidentes informáticos</td><td>A base prática do teu <a href="#incidentes">runbook</a></td></tr>
+    <tr><td><strong>Decretos Pres. 256/25, 258/25, 263/25</strong></td><td>Estratégia, Conselho e Centro Nacional de Cibersegurança</td><td>Novo aparato de cibersegurança, a arrancar em 2026</td></tr>
+    <tr><td><strong>Lei n.º 6/26</strong> (informações falsas, desde 4 ago. 2026)</td><td>Desinformação e deveres de plataformas digitais</td><td>Se tens reviews, comentários ou conteúdo de utilizadores</td></tr>
+  </table></div>
+  <p>A <strong>APD</strong> foi criada pelo <strong>Decreto Presidencial n.º 214/16</strong> e tomou posse em <strong>outubro de 2019</strong>. Tem sete membros (três nomeados pelo Presidente, três eleitos pela Assembleia Nacional e um magistrado) e pode fiscalizar, registar tratamentos, autorizar, receber queixas e <strong>aplicar multas diretamente</strong> (recorríveis em tribunal).</p>
+  <p>Em <strong>setembro de 2025</strong>, a APD assinou um memorando de cooperação com a <strong>ANPD do Brasil</strong> — o primeiro da ANPD com uma autoridade africana lusófona — para troca de experiência em regulação, fiscalização e investigação. Espera interpretações cada vez mais próximas da LGPD.</p>
+  <div class="callout"><p>A APD publica "<strong>Deliberações sobre Processos Contravencionais</strong>" no seu site: uma lista pública de quem foi multado e porquê. É a melhor fonte de jurisprudência que existe.</p></div>
 </section>
 
-<section id="s4">
-<h2><span class="num">4</span>Dados pessoais vs. sensíveis — o mapa para o teu schema</h2>
-<p><strong>Dado pessoal</strong> = qualquer informação, de qualquer natureza ou suporte (incluindo imagem e som), que identifique ou torne identificável uma pessoa singular — direta ou indiretamente.</p>
-<p><strong>Dado sensível</strong> = convicções filosóficas/políticas, filiação partidária/sindical, fé religiosa, vida privada, origem racial/étnica, saúde e vida sexual (incl. dados genéticos). Regime próprio também para <strong>suspeita de atividades ilícitas/crimes</strong> e <strong>dados de crédito e solvabilidade</strong>.</p>
-<table>
-<tr><th>Campo típico no schema</th><th>Classificação</th><th>Nota prática</th></tr>
-<tr><td><code>nome</code>, <code>email</code>, <code>telefone</code>, IP</td><td>Pessoal comum</td><td>Precisa de base legal, não de autorização especial</td></tr>
-<tr><td><code>foto de perfil</code>, geolocalização</td><td>Pessoal comum</td><td>Imagem conta como dado pessoal por definição legal</td></tr>
-<tr><td><code>salário</code>, histórico/score de crédito</td><td><strong>Sensível — crédito/solvabilidade</strong></td><td>Consentimento expresso OU autorização da APD (<span class="art">art. 16.º</span>)</td></tr>
-<tr><td>religião, orientação política, sindicato</td><td><strong>Sensível</strong></td><td>Autorização prévia da APD na quase totalidade dos casos</td></tr>
-<tr><td>dados de saúde, biométricos identificadores</td><td><strong>Sensível</strong></td><td>Regras reforçadas + separação lógica obrigatória (<span class="art">art. 14.º</span>)</td></tr>
-<tr><td>BI/passaporte/documentos KYC</td><td>Pessoal comum, alto risco</td><td>Não é "sensível" por definição, mas exige segurança reforçada</td></tr>
-<tr><td>histórico de compras/navegação</td><td>Pessoal comum</td><td>Cuidado com perfis/scoring automatizado (secção 7)</td></tr>
-<tr><td>reviews/avaliações sobre terceiros</td><td>Pessoal se identificar alguém</td><td>Uma review que nomeia uma pessoa torna os dados dela também abrangidos</td></tr>
-</table>
-<blockquote class="callout warning"><p>⚠️ Um detalhe que apanha muita gente: <strong>dados de crédito e salário são categoria especial</strong>, não um campo comum. Se o teu produto lida com salários ou histórico financeiro, não trates isso como "só mais uma coluna".</p></blockquote>
+<section id="ambito">
+  <div class="sec-head"><h2>A quem se aplica</h2><a class="suggest" data-sec="A quem se aplica" href="#">Sugerir correção</a></div>
+  <p>Resposta curta: <strong>quase de certeza a ti.</strong> A lei aplica-se ao tratamento feito:</p>
+  <ul>
+    <li>por qualquer responsável sediado em Angola;</li>
+    <li>no âmbito de atividades de um responsável estabelecido em Angola, mesmo com sede noutro país;</li>
+    <li>por quem <strong>use meios situados em Angola</strong> para recolher, registar ou fazer transitar dados (servidores, CDNs, pontos de recolha);</li>
+    <li>fora de Angola, quando o direito internacional o determine.</li>
+  </ul>
+  <p>Não precisas de sede em Angola. Se não tens presença lá mas usas "meios" no país, a lei pede que nomeies um <strong>representante estabelecido em Angola</strong> perante a APD.</p>
+  <p><strong>Exceções:</strong> atividades exclusivamente pessoais ou domésticas, segredo de Estado e de justiça, e dados de militares geridos internamente pelas Forças Armadas.</p>
 </section>
 
-<section id="s5">
-<h2><span class="num">5</span>Bases legais: quando precisas mesmo de consentimento</h2>
-<p>A regra geral (<span class="art">art. 12.º</span>) é que só podes tratar dados pessoais se tiveres <strong>consentimento inequívoco e expresso</strong> do titular, <strong>ou</strong> se tiveres feito a <strong>notificação à APD</strong>. Ao contrário do que muita gente assume vindo do RGPD, a notificação à APD é, em si, uma via legítima — não um extra burocrático por cima do consentimento.</p>
-<p>O consentimento é dispensável quando o tratamento for necessário para: executar um contrato em que o titular é parte; cumprir uma obrigação legal do responsável; proteger interesses vitais do titular; executar uma missão de interesse público; ou prosseguir um interesse legítimo do responsável, desde que não prevaleçam os direitos do titular.</p>
-<p>Para <strong>dados sensíveis</strong>, a fasquia sobe: consentimento <strong>inequívoco, expresso e escrito</strong>, ou autorização específica da APD, salvo situações delimitadas (dados manifestamente tornados públicos pelo próprio, defesa de um direito em processo judicial, etc.).</p>
+<section id="tipos-de-dados">
+  <div class="sec-head"><h2>Dados pessoais vs. sensíveis: o mapa para o teu schema</h2><a class="suggest" data-sec="Tipos de dados" href="#">Sugerir correção</a></div>
+  <p><strong>Dado pessoal</strong> é qualquer informação, em qualquer suporte (incluindo imagem e som), que identifique ou torne identificável uma pessoa singular.</p>
+  <p><strong>Dado sensível</strong> abrange convicções filosóficas ou políticas, filiação partidária ou sindical, religião, vida privada, origem racial ou étnica, saúde e vida sexual (incluindo dados genéticos). Têm regime próprio, também, os dados sobre <strong>suspeitas de ilícitos</strong> e de <strong>crédito e solvabilidade</strong>.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Campo típico</th><th>Classificação</th><th>Nota prática</th></tr>
+    <tr><td><code>nome</code>, <code>email</code>, <code>telefone</code>, <code>ip</code></td><td>Pessoal comum</td><td>Base legal + notificação</td></tr>
+    <tr><td><code>foto</code>, <code>geolocalizacao</code></td><td>Pessoal comum</td><td>Imagem é dado pessoal por definição legal</td></tr>
+    <tr><td><code>salario</code>, <code>score_credito</code></td><td><span class="pill auth">Crédito/solvabilidade</span></td><td>Consentimento expresso ou autorização da APD (<span class="art">art. 16.º</span>)</td></tr>
+    <tr><td><code>religiao</code>, <code>partido</code>, <code>sindicato</code></td><td><span class="pill auth">Sensível</span></td><td>Autorização prévia quase sempre</td></tr>
+    <tr><td><code>saude</code>, <code>biometria</code></td><td><span class="pill auth">Sensível</span></td><td>Regras reforçadas e <strong>separação lógica</strong> obrigatória (<span class="art">art. 31.º</span>)</td></tr>
+    <tr><td><code>bi_numero</code>, <code>passaporte_scan</code></td><td>Pessoal, alto risco</td><td>Não é "sensível" na lei, mas exige segurança reforçada</td></tr>
+    <tr><td><code>historico_compras</code>, <code>eventos_navegacao</code></td><td>Pessoal comum</td><td>Cuidado com perfis e scoring automático</td></tr>
+    <tr><td><code>review_texto</code> sobre terceiros</td><td>Pessoal, se identificar alguém</td><td>A pessoa mencionada também passa a ser titular</td></tr>
+  </table></div>
+  <p>Dica de implementação: marca a classificação no próprio schema, para que linters, mascaramento de logs e políticas de acesso a leiam automaticamente.</p>
+<pre><code>-- PostgreSQL: a classificação vive junto da coluna
+COMMENT ON COLUMN users.email        IS 'pii:comum';
+COMMENT ON COLUMN payroll.salario    IS 'pii:credito';   -- art. 16.º
+COMMENT ON COLUMN patients.alergias  IS 'pii:sensivel';  -- art. 31.º: separar logicamente</code></pre>
 </section>
 
-<section id="s6">
-<h2><span class="num">6</span>Notificar vs. pedir autorização — a distinção que custa caro</h2>
-<p>Isto é provavelmente a parte mais mal compreendida por quem vem de fora. Nem tudo precisa da mesma coisa:</p>
-<table>
-<tr><th>Precisas de...</th><th>Situações</th></tr>
-<tr><td><strong>Notificação simples</strong><br><span style="color:var(--ink-faint); font-size:.85em">30 dias para a APD responder; sem resposta = considerado notificado</span></td><td>Tratamento geral de dados comuns; comunicação a terceiros/subcontratados; marketing com consentimento; transferência para país com nível de proteção adequado</td></tr>
-<tr><td><strong>Autorização prévia obrigatória</strong><br><span style="color:var(--ink-faint); font-size:.85em">não lanças antes de a teres</span></td><td>Dados sensíveis (<span class="art">art. 13.º/14.º</span>); crédito/solvabilidade sem consentimento (<span class="art">art. 16.º</span>); videovigilância (<span class="art">art. 17.º</span>); gravação de chamadas (<span class="art">art. 20.º</span>); interconexão de ficheiros (<span class="art">art. 24.º</span>); <strong>transferência para país sem nível adequado</strong> (<span class="art">art. 34.º</span>); decisões automatizadas com efeitos jurídicos (<span class="art">art. 29.º</span>)</td></tr>
-</table>
-<p>O erro clássico — e o mais caro, como vais ver na secção 12: tratar "autorização prévia" como notificação, lançar em produção, e só perceber a diferença depois de uma ou duas multas.</p>
-<blockquote class="callout tip"><p>💡 A APD pode isentar certas categorias de tratamento da obrigação de notificação, por deliberação própria, quando o risco for baixo. Não presumas isenção — confirma junto da APD.</p></blockquote>
+<section id="bases-legais">
+  <div class="sec-head"><h2>Bases legais: quando precisas mesmo de consentimento</h2><a class="suggest" data-sec="Bases legais" href="#">Sugerir correção</a></div>
+  <p>A regra geral (<span class="art">art. 12.º</span>): só podes tratar dados com <strong>consentimento inequívoco e expresso</strong> do titular, ou se fizeste a <strong>notificação à APD</strong>. Ao contrário do RGPD, a notificação é ela própria uma via, não um extra.</p>
+  <p>O consentimento é dispensável quando o tratamento for necessário para:</p>
+  <ul>
+    <li>executar um contrato em que o titular é parte (processar uma encomenda);</li>
+    <li>cumprir uma obrigação legal (reter faturas para o fisco);</li>
+    <li>proteger interesses vitais do titular (emergência médica);</li>
+    <li>executar uma missão de interesse público;</li>
+    <li>prosseguir um interesse legítimo, desde que não prevaleçam os direitos do titular.</li>
+  </ul>
+  <p>Para <strong>dados sensíveis</strong> a fasquia sobe: consentimento <strong>inequívoco, expresso e escrito</strong>, ou autorização da APD, salvo exceções estreitas (dados tornados públicos pelo próprio, defesa de direitos em tribunal).</p>
 </section>
 
-<section id="s7">
-<h2><span class="num">7</span>Situações do dia a dia</h2>
-
-<h3>7.1 Registo e autenticação de utilizadores</h3>
-<span class="risk-tag baixo">risco baixo, se bem desenhado</span>
-<p>Nome, email, password (hash), telefone → dado pessoal comum, base legal = execução de contrato/consentimento. <strong>Boa prática de arquitetura:</strong> nunca uses email, nome ou telefone como identificador público ou chave estrangeira exposta noutras tabelas (ex: numa review pública). Usa um ID interno opaco e resolve a identidade só onde for estritamente necessário — reduz a superfície de exposição numa fuga de dados e facilita cumprir pedidos de eliminação sem repensar o schema todo.</p>
-
-<h3>7.2 Emails, notificações e marketing</h3>
-<span class="risk-tag medio">risco médio</span>
-<p>Enviar email de marketing sem consentimento é, segundo a própria APD, uma violação clara da lei. Publicidade eletrónica (<span class="art">art. 19.º</span>) precisa de consentimento inequívoco <strong>e</strong> notificação à APD, com exceções para comunicações a colaboradores de pessoas coletivas, comunicações do Estado, e clientes existentes já avisados. Dá sempre um opt-out gratuito e fácil, e mantém lista atualizada de quem se opôs.</p>
-
-<h3>7.3 Analytics, cookies e tracking</h3>
-<span class="risk-tag medio">risco médio</span>
-<p>A LPDP não tem um artigo "cookies" dedicado, mas os princípios gerais aplicam-se: um identificador que permite reconhecer um dispositivo/pessoa é dado pessoal. Trata analytics/tracking como tratamento comum — precisa de base legal e, tipicamente, notificação — e documenta na política de privacidade. Recolhendo dados numa rede aberta, o dever de informação pode ser cumprido por uma política de privacidade acessível, que deve avisar explicitamente que os dados podem circular sem garantias totais de segurança.</p>
-
-<h3>7.4 Upload de documentos de identidade / KYC / verificação</h3>
-<span class="risk-tag alto">risco alto</span>
-<p>BI, passaporte ou comprovativos são dados pessoais de alto risco (mesmo não sendo "sensíveis" pela definição legal). Aplica encriptação em repouso e controlo de acesso granular com logs de quem acedeu a quê; define retenção clara com eliminação/anonimização ao fim da finalidade; e se subcontratas a verificação (ex: um provedor de KYC), precisas de contrato escrito nos termos do <span class="art">art. 23.º</span> (ver 7.9).</p>
-
-<h3>7.5 Dados salariais, financeiros e de crédito</h3>
-<span class="risk-tag alto">risco alto</span>
-<p>Regime próprio (<span class="art">art. 16.º</span>): consentimento expresso <strong>ou</strong> autorização da APD. Um "ficheiro de devedores" exige notificar o titular em 60 dias após a inserção dos dados, além da autorização da APD. Aplica-se tanto a fintechs como a qualquer plataforma que publique faixas salariais por empresa/cargo — trata essa componente com o mesmo cuidado que um histórico de crédito, mesmo com dados agregados.</p>
-
-<h3>7.6 Scoring automático, "trust score" e decisões algorítmicas</h3>
-<span class="risk-tag alto">risco alto</span>
-<p>O <span class="art">art. 29.º</span> dá a qualquer pessoa o direito de não ficar sujeita a uma decisão que a afete significativamente, tomada exclusivamente por meios automatizados, destinada a avaliar capacidade profissional, crédito, confiança ou comportamento. Relevante para scoring de crédito, "trust score"/reputação, ou sistemas de recomendação com impacto relevante. Para não caíres na proibição, normalmente precisas de pelo menos uma salvaguarda: o titular pediu ativamente o serviço; existem medidas de representação/contestação; ou a APD autorizou especificamente.</p>
-<blockquote class="callout tip"><p>💡 Se calculas qualquer pontuação de confiança/reputação a partir de sinais agregados, desenha desde o início: (1) mecanismo de recurso/contestação, (2) versionamento auditável da metodologia, (3) nunca decisões de alto impacto só pelo algoritmo, sem via de revisão humana.</p></blockquote>
-
-<h3>7.7 Conteúdo gerado por utilizadores (reviews, comentários) — e a Lei das Fake News</h3>
-<span class="risk-tag medio">risco médio</span>
-<p>Uma review que nomeie uma pessoa singular (ex: um gestor específico) torna essa pessoa também titular de dados pessoais nesse conteúdo. Desde agosto de 2026 está em vigor a <strong>Lei n.º 6/26 — Lei Contra Informações Falsas na Internet</strong>, que impõe deveres de transparência a plataformas digitais (publicar dados sobre remoções, identificar publicidade paga, disponibilizar mecanismos de denúncia/recurso). É um diploma distinto da LPDP e gerou debate político: o governo apresenta-o como resposta à desinformação, enquanto oposição, jornalistas e sociedade civil manifestaram preocupação com o impacto na liberdade de expressão. Se o teu produto modera conteúdo gerado por utilizadores dirigido ao público angolano, é um segundo diploma a acompanhar além da LPDP.</p>
-
-<h3>7.8 Cloud, hosting e transferências internacionais — o erro mais caro</h3>
-<span class="risk-tag alto">risco altíssimo</span>
-<p>Segundo os dados públicos da APD, esta é <strong>a categoria de infração mais cara</strong> vista até agora ($505 mil à Crescer Tech em 2026, por guardar dados de clientes numa cloud fora de Angola sem notificação nem autorização).</p>
-<p>Transferir para país com <strong>nível de proteção adequado</strong> → só notificação. Transferir para país <strong>sem nível adequado</strong> → autorização prévia, só concedida em casos específicos (consentimento expresso e escrito, execução de contrato, cláusulas contratuais de proteção adequada, regras de grupo empresarial, entre outros). A APD decide, caso a caso, se um país tem nível adequado — não presumas que um provedor cloud popular está automaticamente coberto.</p>
-<p><strong>Para arquitetura:</strong> usar uma região de cloud fora de Angola conta como transferência internacional — mesmo "só" para backups, logs ou processamento intermédio. Documenta desde o início: que dados saem, para onde, e com que fundamento — é literalmente um campo obrigatório do formulário de notificação da APD.</p>
-
-<h3>7.9 Fornecedores e APIs de terceiros (subcontratados)</h3>
-<span class="risk-tag medio">risco médio</span>
-<p>Sempre que passas dados a um fornecedor que os trata em teu nome (pagamentos, email transacional, KYC, analytics), a lei chama-lhe "subcontratado" (<span class="art">art. 23.º</span>) e exige contrato escrito que o obrigue a cumprir a LPDP e a agir só segundo as tuas instruções, sem comunicar dados a mais ninguém, aplicando as medidas de segurança da lei e destruindo/devolvendo os dados no fim da relação. Se sair destas regras, passa a ser considerado ele próprio responsável pelo tratamento.</p>
-
-<h3>7.10 Videovigilância e gravação de chamadas</h3>
-<span class="risk-tag medio">risco médio</span>
-<p>Ambos exigem, regra geral, autorização prévia da APD, além de informação visível sobre o sistema e o responsável. Gravação de chamadas para prova de transação precisa de consentimento prévio explícito <strong>e</strong> autorização — exceto chamadas de emergência, que só precisam de notificação.</p>
+<section id="notificar-autorizar">
+  <div class="sec-head"><h2>Notificar vs. pedir autorização: a distinção que custa caro</h2><a class="suggest" data-sec="Notificar vs. autorizar" href="#">Sugerir correção</a></div>
+  <div class="table-wrap"><table>
+    <tr><th>Precisas de</th><th>Quando</th></tr>
+    <tr><td><span class="pill">Notificação</span><br><small>A APD tem 30 dias; sem resposta, consideras-te notificado.</small></td><td>Tratamento geral de dados comuns; comunicação a subcontratados; marketing com consentimento; transferência para país com proteção adequada.</td></tr>
+    <tr><td><span class="pill auth">Autorização prévia</span><br><small>Não lances antes de a teres.</small></td><td>Dados sensíveis (<span class="art">arts. 13.º/14.º</span>); crédito sem consentimento expresso (<span class="art">art. 16.º</span>); videovigilância (<span class="art">art. 17.º</span>); gravação de chamadas (<span class="art">art. 20.º</span>); interconexão de ficheiros (<span class="art">art. 24.º</span>); transferência para país sem proteção adequada (<span class="art">art. 34.º</span>); certas decisões automatizadas (<span class="art">art. 29.º</span>).</td></tr>
+  </table></div>
+  <p>O erro clássico: tratar a autorização como uma notificação, lançar e só perceber a diferença depois da multa. Usa o <a href="#verificador">verificador</a> no topo da página para um primeiro diagnóstico.</p>
+  <div class="callout"><p>A APD pode isentar categorias de baixo risco da notificação, por deliberação. Não presumas a isenção: confirma.</p></div>
 </section>
 
-<section id="s8">
-<h2><span class="num">8</span>Segurança técnica: o checklist dos artigos 30.º/31.º</h2>
-<p>A lei não dita tecnologias específicas, mas exige medidas "técnicas e organizativas" adequadas ao risco. Olhando para os motivos mais citados nas multas reais da APD:</p>
-<ul class="checklist" id="security-checklist">
-<li><span class="box"></span><span class="txt">Controlo de acesso: só pessoas autorizadas acedem, com autenticação forte e permissões por função</span></li>
-<li><span class="box"></span><span class="txt">Encriptação em trânsito e em repouso, sobretudo para dados sensíveis (saúde, crédito, biométricos)</span></li>
-<li><span class="box"></span><span class="txt">Separação lógica entre dados de saúde/vida sexual e o resto (exigência explícita do art. 31.º)</span></li>
-<li><span class="box"></span><span class="txt">Logs de auditoria: verificar a posteriori que dados foram introduzidos, quando e por quem</span></li>
-<li><span class="box"></span><span class="txt">Documento interno de políticas e procedimentos de segurança</span></li>
-<li><span class="box"></span><span class="txt">Plano de resposta a incidentes (secção 9)</span></li>
-<li><span class="box"></span><span class="txt">Cifra de dados em rede quando a APD determinar que o risco o exige</span></li>
-<li><span class="box"></span><span class="txt">Medidas contra perda/alteração acidental — backups testados, não só existentes</span></li>
-</ul>
-<blockquote class="callout warning"><p>Repara que quase todas as multas de 2025–2026 (Standard Bank, TAAG, BDA, Hotel Diamante, Fast Digital Center) citam explicitamente falta de "medidas técnicas e organizativas adequadas" — não é um detalhe secundário, é o artigo mais invocado nas sanções reais.</p></blockquote>
+<section id="situacoes">
+  <div class="sec-head"><h2>Situações do dia a dia</h2><a class="suggest" data-sec="Situações do dia a dia" href="#">Sugerir correção</a></div>
+
+  <h3 id="registo">Registo e autenticação</h3>
+  <ul>
+    <li>Nome, email, hash da password, telefone: dado comum; base legal é o contrato ou o consentimento.</li>
+    <li>Nunca uses email ou telefone como identificador público ou chave estrangeira exposta. Usa um ID opaco (UUID) e resolve a identidade só onde precisas. Fica mais barato cumprir pedidos de eliminação e reduz o impacto de uma fuga.</li>
+    <li>Menores: informação "clara, precisa e objetiva" dirigida a eles e, conforme o tratamento, consentimento de um responsável legal.</li>
+  </ul>
+
+  <h3 id="marketing">Emails, notificações e marketing</h3>
+  <ul>
+    <li>Marketing sem consentimento é, segundo as perguntas frequentes da própria APD, uma violação clara.</li>
+    <li>Publicidade eletrónica (<span class="art">art. 19.º</span>) exige consentimento inequívoco <strong>e</strong> notificação. Exceções: representantes de pessoas coletivas, comunicações do Estado e clientes existentes que já puderam recusar.</li>
+    <li>Opt-out gratuito e fácil em todas as mensagens, e uma lista de oposição mantida e respeitada.</li>
+  </ul>
+
+  <h3 id="analytics">Analytics, cookies e tracking</h3>
+  <p>A LPDP não tem um artigo sobre cookies, mas um identificador que reconhece um dispositivo ou pessoa é dado pessoal. Trata analytics como tratamento comum (base legal e notificação), documenta-o na política de privacidade e, se recolhes por rede aberta, avisa que os dados podem circular sem garantias totais de segurança. Ferramentas self-hosted ou sem cookies reduzem a superfície e evitam uma transferência internacional.</p>
+
+  <h3 id="kyc">Documentos de identidade e KYC</h3>
+  <ul>
+    <li>BI, passaporte e comprovativos são de alto risco: encriptação em repouso, acesso granular, logs de acesso.</li>
+    <li>Define retenção: guarda só enquanto for necessário e depois apaga ou anonimiza. Um job agendado é melhor do que uma promessa na política.</li>
+    <li>Fornecedor de KYC externo é subcontratado: contrato escrito (<span class="art">art. 23.º</span>) e, se estiver fora de Angola, transferência internacional.</li>
+  </ul>
+
+  <h3 id="credito">Salários, finanças e crédito</h3>
+  <ul>
+    <li>Regime próprio (<span class="art">art. 16.º</span>): consentimento expresso ou autorização da APD.</li>
+    <li>Um "ficheiro de devedores" exige autorização e notificar o titular até 60 dias depois da inserção.</li>
+    <li>Vale também para plataformas que publicam faixas salariais por empresa/cargo, mesmo agregadas a jusante.</li>
+  </ul>
+
+  <h3 id="scoring">Scoring, trust score e decisões algorítmicas</h3>
+  <p>O <span class="art">art. 29.º</span> dá direito a não ficar sujeito a uma decisão significativa tomada <strong>só por meios automatizados</strong> sobre capacidade profissional, crédito, confiança ou comportamento. Para ficares do lado certo, precisas de pelo menos uma salvaguarda: o titular pediu o serviço, existe contestação e revisão humana, ou a APD autorizou. Desenha desde o início um botão de contestação, uma metodologia versionada (para explicares porque é que o número mudou) e revisão humana nas decisões de alto impacto. A revisão da lei vai mais longe e proíbe a <a href="#o-que-vem">classificação social por algoritmo</a>.</p>
+
+  <h3 id="ugc">Conteúdo de utilizadores e Lei n.º 6/26</h3>
+  <ul>
+    <li>Uma review que identifica uma pessoa (um gestor, um médico) torna-a titular de dados nesse conteúdo, com direito de acesso e oposição.</li>
+    <li>A <strong>Lei n.º 6/26</strong>, contra informações falsas na internet, está em vigor desde 4 de agosto de 2026. Abrange conteúdo produzido no estrangeiro dirigido ao público angolano e impõe às plataformas deveres de transparência, relatórios mensais ao regulador e mecanismos para identificar, limitar ou remover conteúdo. As sanções incluem multas e, como medida acessória, suspensão ou encerramento da plataforma.</li>
+    <li>A lei foi aprovada com o voto contra da UNITA e criticada por jornalistas e sociedade civil por riscos à liberdade de expressão. Seja qual for a tua posição, se moderas conteúdo para público angolano é um segundo diploma a acompanhar.</li>
+  </ul>
+
+  <h3 id="cloud">Cloud, hosting e transferências internacionais</h3>
+  <div class="callout warn"><p><strong>O erro mais caro até hoje.</strong> A Crescer Tech pagou 505 mil USD em 2026 por guardar dados de clientes numa cloud fora de Angola sem notificação nem autorização. Em 2024, a Maxam pagou 150 mil USD por enviar dados de um angolano para o Reino Unido.</p></div>
+  <ul>
+    <li>País com <strong>proteção adequada</strong> (a APD decide caso a caso): basta notificação (<span class="art">art. 33.º</span>).</li>
+    <li>País <strong>sem proteção adequada</strong>: autorização prévia, com fundamento como consentimento expresso e escrito, execução de contrato, cláusulas contratuais ou regras de grupo empresarial (<span class="art">art. 34.º</span>).</li>
+    <li>AWS, GCP, Azure, DigitalOcean, Vercel, Supabase, Firebase: uma região fora de Angola é transferência internacional, mesmo que seja só para backups, logs ou processamento intermédio.</li>
+    <li>Não esqueças os SaaS "invisíveis": Sentry, Datadog, Mixpanel, Intercom, Mailchimp, Twilio. Todos recebem dados pessoais.</li>
+  </ul>
+  <p>Mantém um ficheiro versionado no repositório com o inventário de transferências. Responde diretamente ao campo do formulário da APD:</p>
+<pre><code># data-transfers.yml
+- fornecedor: AWS
+  regiao: eu-west-1 (Irlanda)
+  dados: [nome, email, telefone, historico_encomendas]
+  finalidade: alojamento da aplicação
+  fundamento: cláusulas contratuais (DPA AWS)
+  estado_apd: notificado 2026-03-14, ref. 0000/2026
+- fornecedor: Sentry
+  regiao: EUA
+  dados: [ip, user_id]   # scrub de email/nome ativado
+  fundamento: interesse legítimo + DPA
+  estado_apd: pendente</code></pre>
+
+  <h3 id="subcontratados">Fornecedores e APIs de terceiros</h3>
+  <p>Quem trata dados <strong>em teu nome</strong> (pagamentos, email transacional, KYC, analytics) é subcontratado (<span class="art">art. 23.º</span>). Precisas de <strong>contrato escrito</strong> que o obrigue a seguir só as tuas instruções, aplicar as medidas de segurança da lei, não comunicar os dados a mais ninguém e destruí-los ou devolvê-los no fim. Se ele sair destas regras, passa a ser responsável pelo tratamento.</p>
+
+  <h3 id="cctv">Videovigilância e gravação de chamadas</h3>
+  <p>Ambos exigem, regra geral, <strong>autorização prévia</strong>, com aviso visível de quem é o responsável. Gravar chamadas como prova de transação exige consentimento explícito <strong>e</strong> autorização; chamadas de emergência só precisam de notificação.</p>
+
+  <h3 id="ia">Inteligência artificial e LLMs</h3>
+  <p>Mandar dados de clientes para uma API de IA alojada fora de Angola (OpenAI, Anthropic, Google) é <strong>subcontratação e transferência internacional</strong> ao mesmo tempo. Antes de ligares um chatbot à base de dados: minimiza e pseudonimiza o que envias, desliga a retenção ou o treino com os teus dados quando o fornecedor o permite, assina o DPA e inclui o fornecedor na notificação. Se o modelo toma decisões sobre pessoas, aplica-se o <a href="#scoring">art. 29.º</a>.</p>
 </section>
 
-<section id="s9">
-<h2><span class="num">9</span>Violação de dados: runbook de resposta a incidentes</h2>
-<p>Em <strong>outubro de 2024</strong>, a APD emitiu a <strong>Circular n.º 2/2024</strong>, clarificando a obrigação de notificar acidentes e incidentes informáticos, cruzando três diplomas: a LPDP (<span class="art">arts. 30.º/31.º</span>), a LCE (<span class="art">art. 55.º</span> — obriga também a notificar o INACOM se fores operador de telecom) e a LRSI (<span class="art">art. 35.º</span>).</p>
-<p><strong>O que conta:</strong> destruição, perda, alteração, indisponibilidade, divulgação, acesso não autorizado, ou qualquer outro incidente de segurança que afete dados pessoais.</p>
-<p><strong>Quando notificar:</strong> "assim que tomar conhecimento" — sem prazo fixo em horas (ao contrário das 72h do RGPD), mas o critério é imediatez, não conveniência.</p>
-<p><strong>Conteúdo mínimo da notificação:</strong> natureza da violação (tipo de dados, nº aproximado de titulares afetados); consequências prováveis; medidas já tomadas ou propostas para mitigar. Se faltar informação, notifica na mesma, explicando o que falta, e complementa depois.</p>
-<pre><code>1. Deteção        → confirma o incidente, contém o impacto
-2. Avaliação       → que dados, quantos titulares, que risco real
-3. Notificação APD → geral@apd.ao, "assim que tomar conhecimento"
-                     — não esperes ter a investigação 100% fechada
-4. LCE/telecom?    → notifica também o INACOM em paralelo
-5. Mitigação       → aplica correções, reforça controlos que falharam
-6. Registo interno → guarda tudo: quando soubeste, quando notificaste,
-                     o que fizeste (é o que separa uma atenuação de
-                     multa cheia — ver caso Hotel Diamante, secção 12)</code></pre>
+<section id="seguranca">
+  <div class="sec-head"><h2>Segurança técnica: arts. 30.º e 31.º</h2><a class="suggest" data-sec="Segurança técnica" href="#">Sugerir correção</a></div>
+  <p>A lei não impõe tecnologias, mas exige medidas "técnicas e organizativas" adequadas ao risco. Quase todas as multas de 2025–2026 (Standard Bank, TAAG, BDA, Hotel Diamante, Fast Digital Center) citam esta falha. Marca o que já tens; o progresso fica guardado neste navegador.</p>
+  <div class="check-meta"><span data-count="sec"></span><button type="button" data-reset="sec">Limpar</button></div>
+  <ul class="checklist" data-list="sec">
+    <li><input type="checkbox" id="sec0"><label for="sec0"><span>Controlo de acesso por função e autenticação forte (MFA) para quem acede a dados pessoais.</span></label></li>
+    <li><input type="checkbox" id="sec1"><label for="sec1"><span>Encriptação em trânsito (TLS) e em repouso, sobretudo para saúde, crédito e biometria.</span></label></li>
+    <li><input type="checkbox" id="sec2"><label for="sec2"><span>Separação lógica entre dados de saúde ou vida sexual e o resto (art. 31.º).</span></label></li>
+    <li><input type="checkbox" id="sec3"><label for="sec3"><span>Logs de auditoria: quem introduziu ou consultou que dados, e quando.</span></label></li>
+    <li><input type="checkbox" id="sec4"><label for="sec4"><span>Documento escrito de políticas e procedimentos de segurança (a lei exige o documento, não só a prática).</span></label></li>
+    <li><input type="checkbox" id="sec5"><label for="sec5"><span>Plano de resposta a incidentes testado.</span></label></li>
+    <li><input type="checkbox" id="sec6"><label for="sec6"><span>Backups com restauro testado, não só "temos backups".</span></label></li>
+    <li><input type="checkbox" id="sec7"><label for="sec7"><span>Mascaramento de PII em logs, erros e ambientes de teste (nada de dumps de produção em staging).</span></label></li>
+    <li><input type="checkbox" id="sec8"><label for="sec8"><span>Segredos fora do repositório e rotação de credenciais após saídas da equipa.</span></label></li>
+  </ul>
 </section>
 
-<section id="s10">
-<h2><span class="num">10</span>Direitos dos titulares: o que o teu produto precisa de suportar</h2>
-<table>
-<tr><th>Direito</th><th>O que implica na prática</th></tr>
-<tr><td><strong>Informação</strong></td><td>Saber, na recolha (ou até 30 dias depois), quem é o responsável, para quê os dados servem, e a quem podem ser comunicados</td></tr>
-<tr><td><strong>Acesso</strong></td><td>Pedir, sem custos nem demoras excessivas, que dados e finalidades existem, e obter cópia</td></tr>
-<tr><td><strong>Retificação, atualização, eliminação</strong></td><td>Prazo legal de <strong>60 dias úteis</strong>. Se já comunicaste a terceiros, tens de os notificar da alteração também</td></tr>
-<tr><td><strong>Oposição</strong></td><td>Opor-se ao tratamento em certas circunstâncias (ex: marketing direto)</td></tr>
-<tr><td><strong>Não sujeição a decisões automatizadas</strong></td><td>Ver secção 7.6</td></tr>
-</table>
-<p>Um pedido de eliminação nem sempre significa apagar tudo de imediato — há situações em que a lei obriga a <strong>bloquear e conservar</strong> (obrigação legal de retenção, disputa de crédito em curso, dados sob investigação). Desenha o sistema de eliminação com um estado de "soft delete + bloqueio", não só um <code>DELETE</code> puro. Se usas logs imutáveis append-only, pensa em como cumprir retificação/eliminação sem quebrar a integridade do log — normalmente via desidentificação do registo, não apagando o histórico todo.</p>
+<section id="incidentes">
+  <div class="sec-head"><h2>Violação de dados: runbook de incidentes</h2><a class="suggest" data-sec="Runbook de incidentes" href="#">Sugerir correção</a></div>
+  <p>Em <strong>outubro de 2024</strong>, a APD emitiu a <strong>Circular n.º 2/2024</strong> sobre a notificação de incidentes informáticos, cruzando a LPDP (<span class="art">arts. 30.º/31.º</span>), a LCE (<span class="art">art. 55.º</span>, que obriga telecoms a notificar também o INACOM) e a LRSI (<span class="art">art. 35.º</span>).</p>
+  <p><strong>O que conta:</strong> destruição, perda, alteração, indisponibilidade, divulgação ou acesso não autorizado a dados pessoais.</p>
+  <p><strong>Quando:</strong> "assim que tomar conhecimento". Análises jurídicas da circular referem uma <strong>notificação inicial em 72 horas</strong>, o mesmo prazo do RGPD e o que a proposta de revisão consagra (<span class="art">art. 41.º</span> da versão 2025). Trata 72h como teto, não como objetivo.</p>
+  <p><strong>Conteúdo mínimo:</strong> natureza da violação (tipo de dados, número aproximado de titulares), consequências prováveis e medidas tomadas ou propostas. Se faltar informação, notifica na mesma, explica o que falta e completa depois.</p>
+<pre><code>T+0     Deteção     confirma, contém (isola sistemas, revoga credenciais)
+T+24h   Avaliação   que dados, quantos titulares, que risco real
+T+72h   APD         notifica geral@apd.ao; não esperes fechar a investigação
+        INACOM      em paralelo, se és operador abrangido pela LCE
+        Titulares   avisa-os se o risco for alto (art. 42.º da proposta)
+depois  Mitigação   corrige, reforça os controlos que falharam
+sempre  Registo     timeline do que soubeste, quando notificaste, o que fizeste</code></pre>
+  <div class="callout ok"><p>Cooperar paga: a multa do Hotel Diamante (Deliberação n.º 006/2026) foi expressamente atenuada pela cooperação ativa com a investigação.</p></div>
 </section>
 
-<section id="s11">
-<h2><span class="num">11</span>Como notificar/pedir autorização à APD, na prática</h2>
-<ol>
-<li><strong>Identifica o tipo de pedido.</strong> A APD tem formulários específicos em apd.ao para: tratamento geral de dados, dados biométricos, videovigilância, gestão de meios de comunicação (telefone/email/internet), legalização de ficheiros existentes, e reclamações.</li>
-<li><strong>Preenche o formulário</strong> com: identidade e morada do responsável (e representante, se aplicável); finalidades; categorias de titulares e de dados; destinatários; subcontratados envolvidos (com contrato anexo); transferências para fora de Angola (país, entidade, tipo de dados, fundamento); tempo de conservação; medidas de segurança.</li>
-<li><strong>Submete</strong> por email (<code>geral@apd.ao</code>), presencialmente na sede, ou pelo balcão online em apd.ao (registo prévio necessário).</li>
-<li><strong>Aguarda.</strong> Notificação simples: 30 dias para a APD se pronunciar, sem resposta = considerado notificado. Autorização (dados sensíveis, transferências para países sem nível adequado, etc.): sem prazo fixo — trata como item de bloqueio de lançamento, não formalidade em paralelo.</li>
-<li><strong>Guarda o comprovativo.</strong> O registo de tratamentos é público e consultável na APD — útil para confirmares mais tarde que o processo ficou registado.</li>
-</ol>
-<p><strong>Contacto oficial:</strong> Rua do MAT, Complexo Administrativo Clássicos de Talatona, 3.º Edifício, 7.º andar, Luanda · +244 937 930 788 · <a href="mailto:geral@apd.ao">geral@apd.ao</a> · <a href="https://apd.ao" target="_blank" rel="noopener">apd.ao</a></p>
-<blockquote class="callout tip"><p>A APD tem uma tabela de taxas própria, com valor variável por tipo de tratamento — consulta diretamente antes de orçamentares o processo.</p></blockquote>
+<section id="direitos">
+  <div class="sec-head"><h2>Direitos dos titulares</h2><a class="suggest" data-sec="Direitos dos titulares" href="#">Sugerir correção</a></div>
+  <p>Devem ser funcionalidades do produto, não só uma cláusula na política de privacidade.</p>
+  <div class="table-wrap"><table>
+    <tr><th>Direito</th><th>Na prática</th></tr>
+    <tr><td><strong>Informação</strong></td><td>No momento da recolha (ou até 30 dias, se os dados não vieram do titular): quem és, para quê e a quem comunicas.</td></tr>
+    <tr><td><strong>Acesso</strong></td><td>Sem custos nem demora excessiva: finalidades, categorias e cópia dos dados. Um botão "exportar os meus dados" resolve.</td></tr>
+    <tr><td><strong>Retificação e eliminação</strong></td><td>Até <strong>60 dias úteis</strong>. Tens de propagar a terceiros a quem comunicaste os dados.</td></tr>
+    <tr><td><strong>Oposição</strong></td><td>Por exemplo, ao marketing direto.</td></tr>
+    <tr><td><strong>Decisões automatizadas</strong></td><td>Ver <a href="#scoring">scoring</a>.</td></tr>
+  </table></div>
+  <ul>
+    <li>Eliminar nem sempre é <code>DELETE</code>: retenção legal, litígios ou investigações obrigam a <strong>bloquear e conservar</strong>. Modela estados como <code>active → blocked → erased</code>.</li>
+    <li>Em logs append-only, usa desidentificação ou tombstones (e, para dados por utilizador, crypto-shredding: apagar a chave torna os dados ilegíveis).</li>
+  </ul>
 </section>
 
-<section id="s12">
-<h2><span class="num">12</span>Sala de troféus — multas reais</h2>
-<p>Nada ensina conformidade mais depressa do que ver quem já pagou a fatura. Valores em equivalente USD, divulgados pela própria APD/imprensa angolana; pagos em Kwanzas.</p>
-<table class="fines">
-<tr><th>Ano</th><th>Entidade</th><th>Multa</th><th>Motivo principal</th></tr>
-<tr><td>2022</td><td>BPC — Banco de Poupança e Crédito</td><td class="amount">$525.000</td><td>Não pediu autorização à APD para dados de trabalhadores (art. 35.º, n.º 1)</td></tr>
-<tr><td>2024</td><td>Maxam — Pólvoras e Explosivos</td><td class="amount">$150.000</td><td>Transferência ilegal de dados para o Reino Unido, sem autorização, + falta de notificação de dados de trabalhadores</td></tr>
-<tr><td>2024</td><td>Unitel, ENDE, Cosal, B. C. Huambo</td><td class="amount">$75–225 mil cada</td><td>4 sanções adicionais em 2024 (total do ano ≈ $600 mil)</td></tr>
-<tr><td>2025</td><td>TAAG (2 multas)</td><td class="amount">$175.000</td><td>Falta de medidas p/ proteger dados de passageiros + falta de notificação</td></tr>
-<tr><td>2025</td><td>BDA — Banco de Desenvolvimento</td><td class="amount">$75.000</td><td>Segurança inadequada — sofreu ransomware em fev. 2023</td></tr>
-<tr class="highlight"><td>2026</td><td><strong>Crescer Tech</strong></td><td class="amount big">$505.000</td><td><strong>Maior multa do ano.</strong> Dados em cloud fora de Angola, sem notificação nem autorização</td></tr>
-<tr><td>2026</td><td>Standard Bank Angola</td><td class="amount">$150.000</td><td>Acesso não autorizado a dados de 51 clientes (nome, email, morada, telefone, saldo)</td></tr>
-<tr><td>2026</td><td>EPAL</td><td class="amount">$150.000</td><td>Falhas na proteção de dados de clientes + falta de notificação/autorização</td></tr>
-<tr><td>2026</td><td>Fast Digital Center</td><td class="amount">$112.000</td><td>Medidas técnicas/organizativas inadequadas + falta de notificação/autorização</td></tr>
-<tr><td>2026</td><td>Hotel Diamante</td><td class="amount">$115.000</td><td>Arts. 30.º/31.º (segurança) + falta de notificação — atenuada por cooperação</td></tr>
-<tr><td>2026</td><td>TAKE NOW</td><td class="amount">$75.000</td><td>Tratamento de dados sem notificação nem autorização</td></tr>
-<tr><td>2026</td><td>Unitel (caso adicional)</td><td class="amount">n/d</td><td>Falha de segurança → transferência fraudulenta de número/dados de uma cliente</td></tr>
-</table>
-<p><strong>Totais a reter:</strong> desde 2022, mais de <strong>2,5 milhões de USD</strong> a cerca de 15 empresas. Só em 2026 (até meados de agosto): mais de <strong>1,1 milhão</strong> — o ano mais pesado de sempre, mais do dobro do recorde anterior. O padrão mais comum: <strong>falta de notificação/autorização</strong> combinada com <strong>segurança insuficiente</strong>; a transferência internacional sem autorização é o motivo isolado mais caro. Cooperar ativamente com a investigação (caso Hotel Diamante) resultou em atenuação explícita — vale a pena ter isto em mente no teu runbook.</p>
+<section id="como-notificar">
+  <div class="sec-head"><h2>Como notificar a APD, passo a passo</h2><a class="suggest" data-sec="Como notificar a APD" href="#">Sugerir correção</a></div>
+  <ol>
+    <li><strong>Escolhe o formulário.</strong> O site <a href="https://apd.ao/ao/" target="_blank" rel="noopener">apd.ao</a> tem formulários para tratamento geral, biometria, videovigilância, meios de comunicação (telefone/email/internet), legalização de ficheiros existentes e reclamações.</li>
+    <li><strong>Preenche.</strong> Identidade do responsável (e representante), finalidades, categorias de titulares e de dados, destinatários, subcontratados (com o contrato anexo), transferências para fora de Angola (país, entidade, dados, fundamento), conservação e medidas de segurança. O teu <code>data-transfers.yml</code> e a checklist de segurança respondem a metade disto.</li>
+    <li><strong>Submete</strong> por email (<code>geral@apd.ao</code>), presencialmente na sede, ou no balcão online do site (precisa de registo).</li>
+    <li><strong>Aguarda.</strong> Notificação: 30 dias; sem resposta, consideras-te notificado. Autorização: sem prazo fixo. Trata-a como bloqueio de lançamento.</li>
+    <li><strong>Guarda o comprovativo.</strong> O registo de tratamentos é público e consultável.</li>
+  </ol>
+  <p>Há uma <strong>tabela de taxas</strong> que varia por tipo de tratamento. Confirma o valor antes de orçamentar.</p>
 </section>
 
-<section id="s13">
-<h2><span class="num">13</span>Precisas de um DPO?</h2>
-<p>Curto: <strong>a lei angolana não exige, por si só, a nomeação de um Encarregado de Proteção de Dados</strong> (ao contrário do RGPD europeu ou da LGPD brasileira). A LPDP de 2011 não tem artigo equivalente ao "Data Protection Officer".</p>
-<p>Isto não significa que não precises de ninguém responsável: alguém tem de ser o ponto de contacto para a APD, para pedidos de titulares, e para coordenar resposta a incidentes. Em startups pequenas, isto costuma ser acumulado (fundador técnico, head of engineering, legal externo), não um cargo dedicado. Em empresas maiores, com dados sensíveis em volume, ou em setores regulados (banca, seguros, telecom), formalizar ajuda — mas não é requisito estatutário angolano.</p>
+<section id="multas">
+  <div class="sec-head"><h2>Multas reais, 2022–2026</h2><a class="suggest" data-sec="Multas reais" href="#">Reportar multa nova</a></div>
+  <p>Valores equivalentes em USD divulgados pela APD e pela imprensa angolana (pagos em kwanzas). A barra é proporcional à maior multa de sempre (BPC, 525 mil USD).</p>
+  <div class="filters" role="group" aria-label="Filtrar multas por motivo">
+    <button type="button" data-filter="all" aria-pressed="true">Todas</button>
+    <button type="button" data-filter="notif" aria-pressed="false">Sem notificação/autorização</button>
+    <button type="button" data-filter="seg" aria-pressed="false">Segurança fraca</button>
+    <button type="button" data-filter="transf" aria-pressed="false">Transferência internacional</button>
+    <button type="button" data-filter="banca" aria-pressed="false">Banca</button>
+  </div>
+  <ul class="fines" id="fines">
+    <li class="fine" data-tags="notif banca"><span class="yr">2022</span><span class="who">BPC — Banco de Poupança e Crédito<span class="amt">$525K</span></span><span class="bar" style="--v:525"></span><p class="why">Tratou dados de trabalhadores sem autorização da APD. Recorde absoluto.</p></li>
+    <li class="fine" data-tags="transf notif"><span class="yr">2024</span><span class="who">Maxam — Pólvoras e Explosivos<span class="amt">$150K</span></span><span class="bar" style="--v:150"></span><p class="why">Transferência ilegal de dados de um angolano para o Reino Unido e falta de notificação sobre trabalhadores.</p></li>
+    <li class="fine" data-tags="notif seg"><span class="yr">2024</span><span class="who">ENDE e Cosal<span class="amt">$300K</span></span><span class="bar" style="--v:300"></span><p class="why">Violações à Lei 22/11; sanção conjunta divulgada pela APD.</p></li>
+    <li class="fine" data-tags="notif seg banca"><span class="yr">2024</span><span class="who">Unitel e Banco Comercial do Huambo<span class="amt">n.d.</span></span><span class="bar na"></span><p class="why">Restantes sanções de 2024 (total do ano ≈ $600K).</p></li>
+    <li class="fine" data-tags="seg notif"><span class="yr">2025</span><span class="who">TAAG — Linhas Aéreas de Angola<span class="amt">$175K</span></span><span class="bar" style="--v:175"></span><p class="why">Duas multas: dados de passageiros e familiares sem medidas adequadas, e falta de notificação.</p></li>
+    <li class="fine" data-tags="seg banca"><span class="yr">2025</span><span class="who">BDA — Banco de Desenvolvimento de Angola<span class="amt">$75K</span></span><span class="bar" style="--v:75"></span><p class="why">Segurança insuficiente; sofreu ransomware em fevereiro de 2023.</p></li>
+    <li class="fine" data-tags="transf notif"><span class="yr">2026</span><span class="who">Crescer Tech<span class="amt">$505K</span></span><span class="bar" style="--v:505"></span><p class="why">Dados de clientes numa cloud fora de Angola, sem notificação nem autorização. Maior multa de 2026.</p></li>
+    <li class="fine" data-tags="seg banca"><span class="yr">2026</span><span class="who">Standard Bank Angola<span class="amt">$150K</span></span><span class="bar" style="--v:150"></span><p class="why">Acesso não autorizado a dados de 51 clientes, incluindo saldos.</p></li>
+    <li class="fine" data-tags="seg notif"><span class="yr">2026</span><span class="who">EPAL — Empresa Pública de Águas<span class="amt">$150K</span></span><span class="bar" style="--v:150"></span><p class="why">Falhas na proteção de dados de clientes e falta de notificação/autorização.</p></li>
+    <li class="fine" data-tags="seg notif"><span class="yr">2026</span><span class="who">Hotel Diamante (Lizíria, Lda.)<span class="amt">$115K</span></span><span class="bar" style="--v:115"></span><p class="why">Arts. 30.º/31.º e falta de notificação. Deliberação 006/2026; atenuada por cooperação.</p></li>
+    <li class="fine" data-tags="seg notif"><span class="yr">2026</span><span class="who">Fast Digital Center<span class="amt">$112K</span></span><span class="bar" style="--v:112"></span><p class="why">Medidas inadequadas para proteger dados de um cliente e falta de notificação.</p></li>
+    <li class="fine" data-tags="notif"><span class="yr">2026</span><span class="who">TAKE NOW<span class="amt">$75K</span></span><span class="bar" style="--v:75"></span><p class="why">Dados de clientes tratados sem notificação nem autorização.</p></li>
+    <li class="fine" data-tags="seg"><span class="yr">2026</span><span class="who">Unitel<span class="amt">n.d.</span></span><span class="bar na"></span><p class="why">Falha de segurança permitiu transferir fraudulentamente o número e os dados de uma cliente (SIM swap).</p></li>
+  </ul>
+  <ul>
+    <li><strong>Total desde 2022:</strong> entre 2,38 e 2,5 milhões de USD, a 14–15 empresas (as fontes divergem).</li>
+    <li><strong>2026:</strong> 1,107 milhões de USD a seis entidades até agosto, contra cerca de 250 mil em todo o ano de 2025.</li>
+    <li><strong>Banca:</strong> 825 mil USD acumulados (BPC, Standard Bank, BCH, BDA).</li>
+    <li><strong>Padrão:</strong> falta de notificação/autorização somada a segurança fraca. A transferência internacional é o motivo isolado mais caro.</li>
+  </ul>
 </section>
 
-<section id="s14">
-<h2><span class="num">14</span>Checklist de pré-lançamento</h2>
-<p>Antes de dares deploy em produção com dados pessoais reais de utilizadores angolanos — clica para marcar:</p>
-<ul class="checklist" id="launch-checklist">
-<li><span class="box"></span><span class="txt">Sabes exatamente que dados pessoais e sensíveis o produto recolhe (inventário de dados)</span></li>
-<li><span class="box"></span><span class="txt">Classificaste dados de crédito/salário como categoria especial, não campo comum</span></li>
-<li><span class="box"></span><span class="txt">Política de privacidade publicada: identidade do responsável, finalidades, destinatários, direitos</span></li>
-<li><span class="box"></span><span class="txt">Sabes se precisas só de notificação ou de autorização prévia — e já a pediste, se aplicável</span></li>
-<li><span class="box"></span><span class="txt">Cloud fora de Angola já identificada como transferência internacional e tratada (secção 7.8)</span></li>
-<li><span class="box"></span><span class="txt">Contratos escritos com subcontratados (pagamentos, email, KYC, analytics)</span></li>
-<li><span class="box"></span><span class="txt">Medidas técnicas mínimas: acesso, encriptação, logs, backups testados</span></li>
-<li><span class="box"></span><span class="txt">Runbook de resposta a incidentes, com contacto da APD identificado</span></li>
-<li><span class="box"></span><span class="txt">Produto permite, na prática, acesso/retificação/eliminação — não só um email</span></li>
-<li><span class="box"></span><span class="txt">Scoring/decisão automatizada relevante tem mecanismo de contestação</span></li>
-<li><span class="box"></span><span class="txt">Sabes responder a pedidos de acesso/oposição sobre conteúdo gerado por utilizadores</span></li>
-<li><span class="box"></span><span class="txt">Sabes quem, na equipa, é o ponto de contacto responsável por isto tudo</span></li>
-</ul>
+<section id="dpo">
+  <div class="sec-head"><h2>Precisas de um DPO?</h2><a class="suggest" data-sec="DPO" href="#">Sugerir correção</a></div>
+  <p>Hoje, <strong>não</strong>: a Lei 22/11 não tem a figura do Encarregado de Proteção de Dados. Mas a <a href="#o-que-vem">proposta de revisão</a> prevê-a em certos casos (interno ou contratado), por isso começa já a formalizar:</p>
+  <ul>
+    <li>um ponto de contacto para a APD, para os pedidos dos titulares e para os incidentes;</li>
+    <li>numa startup, normalmente o fundador técnico ou o head of engineering, apoiado por jurídico externo;</li>
+    <li>em setores regulados (banca, seguros, telecom, saúde) ou com dados sensíveis em volume, uma função dedicada.</li>
+  </ul>
 </section>
 
-<section id="s15">
-<h2><span class="num">15</span>Outras leis a vigiar</h2>
-<ul>
-<li><strong>LCE (Lei n.º 23/11)</strong> — comunicações eletrónicas e serviços da sociedade da informação; marketing eletrónico e obrigação paralela de notificar o INACOM em caso de incidente, se fores operador de telecom.</li>
-<li><strong>LRSI (Lei n.º 7/17)</strong> — proteção de redes e sistemas informáticos; já sinalizada como precisando de revisão para se adequar ao contexto digital atual.</li>
-<li><strong>Novo aparato de cibersegurança (dez. 2025)</strong> — Estratégia Nacional 2024–2028, Conselho e Centro Nacional de Cibersegurança, criados por decreto presidencial, ainda em implementação em 2026. Relevante sobretudo para infraestrutura crítica (saúde, energia, telecom, finanças).</li>
-<li><strong>Lei n.º 6/26</strong> (Fake News) — em vigor desde agosto de 2026, deveres de transparência e moderação para plataformas digitais. Diploma distinto da LPDP, politicamente debatido em Angola (ver secção 7.7).</li>
-</ul>
+<section id="o-que-vem">
+  <div class="sec-head"><h2>O que vem aí <span class="pill new">em revisão</span></h2><a class="suggest" data-sec="O que vem aí" href="#">Sugerir correção</a></div>
+  <p>A Lei 22/11 tem 15 anos e está a ser substituída. Nada do que se segue está em vigor, mas desenhar já para isto evita refazer o produto mais tarde.</p>
+  <h3>Revisão da Lei de Proteção de Dados</h3>
+  <p>A APD pôs o projeto em <strong>consulta pública de 17 de março a 17 de abril de 2025</strong>. A versão de 2025 revoga a Lei 22/11 e, entre outras coisas:</p>
+  <ul>
+    <li>obriga a notificar violações à APD em <strong>72 horas</strong> (<span class="art">art. 41.º</span>) e, conforme o risco, os titulares (<span class="art">art. 42.º</span>);</li>
+    <li>prevê a designação de um <strong>encarregado de proteção de dados</strong> em casos definidos;</li>
+    <li>dedica um capítulo à <strong>inteligência artificial</strong>: direito a explicação, contestação e revisão humana (<span class="art">art. 37.º</span>), responsabilidade de produtores, fornecedores e operadores (<span class="art">art. 38.º</span>) e proibição de certas práticas, como a <strong>classificação social de pessoas por algoritmo</strong>.</li>
+  </ul>
+  <h3>Proposta de Lei sobre a Inteligência Artificial</h3>
+  <p>Em paralelo, o MINTTICS apresentou em setembro de 2025 uma proposta de lei de IA com 86 artigos, que cria uma autoridade própria e um regime de sanções. Foi aprovada na generalidade mas, em meados de 2026, ainda não estava promulgada. Juristas alertam para o risco de dois regimes e dois reguladores sobre a mesma realidade.</p>
+  <div class="callout"><p><strong>Para devs:</strong> se já cumpres o RGPD ou a LGPD (72h, DPO, avaliação de impacto, direitos sobre decisões automatizadas), estás bem posicionado para a nova lei. Acompanha a <a href="https://www.consultapublica.gov.ao/consulta/100021" target="_blank" rel="noopener">página da consulta pública</a> e o <a href="#perguntas">quadro de perguntas</a> deste guia.</p></div>
 </section>
 
-<section id="s16">
-<h2><span class="num">16</span>Recursos e contactos</h2>
-<ul>
-<li><strong>APD:</strong> <a href="https://apd.ao/ao/" target="_blank" rel="noopener">apd.ao</a> · geral@apd.ao · +244 937 930 788</li>
-<li><strong>Texto da Lei n.º 22/11:</strong> disponível em apd.ao e em repositórios como o AngoLEX</li>
-<li><strong>Deliberações e processos contravencionais:</strong> secção de notícias/deliberações do site da APD — a melhor forma de acompanhar precedentes reais</li>
-<li><strong>Programa SensiDados:</strong> iniciativa de sensibilização da própria APD, com ações em escolas e institutos técnicos</li>
-</ul>
+<section id="lancamento">
+  <div class="sec-head"><h2>Checklist de lançamento</h2><a class="suggest" data-sec="Checklist de lançamento" href="#">Sugerir item</a></div>
+  <p>Antes do deploy com dados reais de utilizadores angolanos:</p>
+  <div class="check-meta"><span data-count="launch"></span><button type="button" data-reset="launch">Limpar</button></div>
+  <ul class="checklist" data-list="launch">
+    <li><input type="checkbox" id="l0"><label for="l0"><span>Inventário: sei que dados pessoais e sensíveis recolho e onde vivem.</span></label></li>
+    <li><input type="checkbox" id="l1"><label for="l1"><span>Dados de crédito e salariais estão marcados como categoria especial.</span></label></li>
+    <li><input type="checkbox" id="l2"><label for="l2"><span>Política de privacidade publicada: responsável, finalidades, destinatários, como exercer direitos.</span></label></li>
+    <li><input type="checkbox" id="l3"><label for="l3"><span>Sei se preciso de notificação ou de autorização, e já submeti o pedido.</span></label></li>
+    <li><input type="checkbox" id="l4"><label for="l4"><span>Cloud e SaaS fora de Angola identificados como transferências e tratados junto da APD.</span></label></li>
+    <li><input type="checkbox" id="l5"><label for="l5"><span>Contratos escritos (DPA) com todos os subcontratados.</span></label></li>
+    <li><input type="checkbox" id="l6"><label for="l6"><span>Controlo de acesso, encriptação, logs de auditoria e backups testados.</span></label></li>
+    <li><input type="checkbox" id="l7"><label for="l7"><span>Runbook de incidentes com o contacto da APD e o prazo de 72h.</span></label></li>
+    <li><input type="checkbox" id="l8"><label for="l8"><span>Acesso, exportação, retificação e eliminação funcionam no produto.</span></label></li>
+    <li><input type="checkbox" id="l9"><label for="l9"><span>Scoring ou decisões automáticas têm contestação e revisão humana.</span></label></li>
+    <li><input type="checkbox" id="l10"><label for="l10"><span>Sei responder a pedidos sobre conteúdo de utilizadores que menciona terceiros.</span></label></li>
+    <li><input type="checkbox" id="l11"><label for="l11"><span>Há uma pessoa nomeada como responsável por tudo isto.</span></label></li>
+  </ul>
+</section>
+
+<section id="faq">
+  <div class="sec-head"><h2>Perguntas frequentes</h2><a class="suggest" data-sec="FAQ" href="#">Sugerir pergunta</a></div>
+  <details><summary>Preciso de autorização para usar uma cloud fora de Angola?</summary><div><p>É uma transferência internacional. Para países com proteção adequada basta notificar; para os restantes é precisa autorização prévia (<span class="art">arts. 33.º/34.º</span>). Na dúvida, pergunta à APD antes de escolher a região. Ver <a href="#cloud">cloud e transferências</a>.</p></div></details>
+  <details><summary>Basta ter consentimento do utilizador?</summary><div><p>Não. Precisas de base legal <strong>e</strong> de notificar a APD, ou pedir autorização nos casos especiais, antes de começares a tratar dados.</p></div></details>
+  <details><summary>Sou obrigado a ter um DPO?</summary><div><p>Hoje não. A proposta de revisão prevê-o em certos casos. Ver <a href="#dpo">DPO</a>.</p></div></details>
+  <details><summary>Em quanto tempo notifico uma violação de dados?</summary><div><p>"Assim que tomar conhecimento", segundo a Circular 2/2024. Usa 72 horas como prazo máximo. Ver <a href="#incidentes">runbook</a>.</p></div></details>
+  <details><summary>A lei aplica-se a um SaaS estrangeiro com clientes angolanos?</summary><div><p>Se usa meios situados em Angola para recolher ou tratar dados, sim, e deve nomear um representante em Angola. Ver <a href="#ambito">âmbito</a>.</p></div></details>
+  <details><summary>Quanto custa uma multa?</summary><div><p>Para empresas, os valores base são triplicados e podem chegar a 450 mil USD por infração. Na prática, a APD soma infrações: a maior até hoje foi de 525 mil USD. Ver <a href="#multas">multas reais</a>.</p></div></details>
+</section>
+
+<section id="perguntas">
+  <div class="sec-head"><h2>Perguntas da comunidade</h2></div>
+  <p>Tens uma dúvida concreta sobre o teu produto? Abre uma pergunta no GitHub. As boas respostas acabam neste guia.</p>
+  <ul class="issues" id="issues"><li><span class="empty">A carregar perguntas do GitHub…</span></li></ul>
+  <div class="cta-row">
+    <a class="btn solid" href="https://github.com/DumiJDev/apd4devs/issues/new?template=pergunta.yml" target="_blank" rel="noopener">Fazer uma pergunta</a>
+    <a class="btn" href="https://github.com/DumiJDev/apd4devs/issues?q=label%3Apergunta" target="_blank" rel="noopener">Ver todas</a>
+  </div>
+</section>
+
+<section id="fontes">
+  <div class="sec-head"><h2>Fontes e contactos</h2><a class="suggest" data-sec="Fontes" href="#">Sugerir fonte</a></div>
+  <ul>
+    <li><strong>APD:</strong> <a href="https://apd.ao/ao/" target="_blank" rel="noopener">apd.ao</a> · <a href="mailto:geral@apd.ao">geral@apd.ao</a> · +244 937 930 788 · Rua do MAT, Complexo Administrativo Clássicos de Talatona, 3.º Edifício, 7.º andar, Luanda</li>
+    <li><strong>Lei n.º 22/11:</strong> <a href="https://www.angolex.com/paginas/leis/lei-de-protecao-de-dados-pessoais.html" target="_blank" rel="noopener">texto no AngoLEX</a></li>
+    <li><strong>Proposta de revisão (2025):</strong> <a href="https://angolex.com/paginas/projecto-lei/proposta-de-lei-de-proteccao-de-dados-pessoais-versao-2025a.html" target="_blank" rel="noopener">AngoLEX</a> · <a href="https://www.consultapublica.gov.ao/consulta/100021" target="_blank" rel="noopener">consulta pública</a></li>
+    <li><strong>Lei n.º 6/26:</strong> <a href="https://lex.ao/docs/assembleia-nacional/2026/lei-n-o-6-26-de-04-de-agosto/" target="_blank" rel="noopener">lex.ao</a></li>
+    <li><strong>Trajetória da APD:</strong> <a href="https://julgar.pt/wp-content/uploads/2026/02/A-trajectoria-da-agencia-de-proteccao-de-dados-de-angola.pdf" target="_blank" rel="noopener">Revista Julgar (2026, PDF)</a></li>
+    <li><strong>Multas:</strong> <a href="https://www.menosfios.com/angola-multas-por-violacao-de-dados-ultrapassam-11milhao-usd-em-2026/" target="_blank" rel="noopener">Menos Fios</a> · <a href="http://www.expansao.co.ao/empresas/detalhe/agencia-de-proteccao-de-dados-ja-aplicou-multas-de-25-milhoes-usd-desde-2022-73575.html" target="_blank" rel="noopener">Expansão</a> · <a href="https://www.verangola.net/va/pt/062026/Sociedade/49239/Agência-de-Protecção-de-Dados-multou-duas-empresas-em-mais-de-600-mil-dólares.htm" target="_blank" rel="noopener">Ver Angola</a> · <a href="https://plmj.com/xms/files/03_Novidades_legislativas/2024/N_Colab_RVA-PLMJ_Dados_Pessoais_e_Ciber-seguranca_em_Angola.pdf" target="_blank" rel="noopener">PLMJ/RVA (PDF)</a></li>
+    <li><strong>Cooperação APD–ANPD:</strong> <a href="https://convergenciadigital.com.br/governo/anpd-assina-acordos-com-angola-argentina-espanha-e-reino-unido/" target="_blank" rel="noopener">Convergência Digital</a></li>
+    <li><strong>Visão geral em inglês:</strong> <a href="https://www.dlapiperdataprotection.com/?c=AO&amp;t=law" target="_blank" rel="noopener">DLA Piper</a></li>
+    <li><strong>Programa SensiDados:</strong> sensibilização da APD em escolas e institutos técnicos.</li>
+  </ul>
 </section>
 
 </main>
 </div>
 
-<footer>
-  <div class="footer-inner">
-    <h2 style="border:none; padding:0;">Aviso legal</h2>
-    <p>Este guia foi escrito para orientar decisões técnicas e de produto, com base em informação pública disponível até setembro de 2026 (texto da lei, orientações e circulares da APD, e cobertura jornalística de deliberações públicas). <strong>Não substitui aconselhamento jurídico.</strong> A prática regulatória da APD pode evoluir mais depressa do que este documento. Antes de submeteres uma notificação/pedido de autorização formal, ou antes de decisões de arquitetura com implicações legais relevantes, confirma com um advogado angolano especializado em proteção de dados ou diretamente com a APD.</p>
-    <p>Encontraste um erro ou uma atualização legal que falta aqui? Abre uma issue ou um pull request — este guia é para a comunidade dev angolana manter atualizado.</p>
+<section class="community" id="contribuir" aria-labelledby="contrib-title">
+  <div class="community-in">
+    <div>
+      <h2 id="contrib-title">Este guia é da comunidade dev angolana</h2>
+      <p>A APD publica multas novas todos os meses e a lei está a mudar. Um guia aberto só se mantém certo se quem o usa o corrigir. Dez segundos de ajuda contam.</p>
+      <div class="cta-row">
+        <a class="btn gold" href="https://github.com/DumiJDev/apd4devs" target="_blank" rel="noopener" data-star>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z"/></svg>
+          Dar estrela no GitHub<span class="star-count" hidden></span>
+        </a>
+        <a class="btn" href="https://github.com/DumiJDev/apd4devs/blob/master/CONTRIBUTING.md" target="_blank" rel="noopener">Como contribuir</a>
+      </div>
+    </div>
+    <ul class="ways">
+      <li><b>Dá uma estrela</b>Ajuda outros devs a encontrar o guia.</li>
+      <li><b>Pergunta</b><a href="https://github.com/DumiJDev/apd4devs/issues/new?template=pergunta.yml" target="_blank" rel="noopener">Abre uma issue</a> com a tua dúvida. Responder-lhe melhora o guia.</li>
+      <li><b>Corrige</b>Viste uma multa nova, um artigo errado ou um link partido? <a href="https://github.com/DumiJDev/apd4devs/issues/new?template=correcao.yml" target="_blank" rel="noopener">Reporta</a> ou edita o <code>index.html</code> e abre um pull request.</li>
+      <li><b>Partilha</b>Envia aos teus colegas antes do próximo deploy.</li>
+    </ul>
   </div>
+</section>
+
+<footer>
+  <h2>Aviso legal</h2>
+  <p>Guia para orientar decisões técnicas e de produto, com base em informação pública até novembro de 2026: texto da lei, circulares da APD, propostas legislativas e imprensa sobre deliberações públicas. <strong>Não é aconselhamento jurídico.</strong> Antes de submeteres um pedido à APD ou de decisões de arquitetura com impacto legal, confirma com um advogado angolano especializado ou com a própria APD. Projeto independente, sem ligação à APD.</p>
+  <p>Licença MIT · <a href="https://github.com/DumiJDev/apd4devs" target="_blank" rel="noopener">github.com/DumiJDev/apd4devs</a> · Última atualização: 2 de novembro de 2026</p>
 </footer>
 
 <script>
-  // persist checklist state in localStorage
-  document.querySelectorAll('.checklist').forEach(function(list){
-    var key = 'apd-guide-' + list.id;
-    var saved = {};
-    try { saved = JSON.parse(localStorage.getItem(key) || '{}'); } catch(e){}
-    var items = list.querySelectorAll('li');
-    items.forEach(function(li, i){
-      if(saved[i]) li.classList.add('checked');
-      li.addEventListener('click', function(){
-        li.classList.toggle('checked');
-        var state = {};
-        items.forEach(function(l2, j){ state[j] = l2.classList.contains('checked'); });
-        try { localStorage.setItem(key, JSON.stringify(state)); } catch(e){}
+(function(){
+  var REPO = 'DumiJDev/apd4devs';
+  var GH = 'https://github.com/' + REPO;
+  function store(fn){ try { return fn(); } catch(e){ return null; } }
+
+  // --- verificador: notificar vs. autorizar ---
+  var RULES = {
+    cloud: {auth:true,  txt:'Transferência internacional (arts. 33.º/34.º): autorização se o país não tiver proteção adequada.', a:'#cloud', prec:'Crescer Tech, 2026: $505K.'},
+    sens:  {auth:true,  txt:'Dados sensíveis (arts. 13.º/14.º): autorização prévia e separação lógica.', a:'#tipos-de-dados'},
+    cred:  {auth:true,  txt:'Crédito e solvabilidade sem consentimento expresso (art. 16.º).', a:'#credito'},
+    cctv:  {auth:true,  txt:'Videovigilância e gravação de chamadas (arts. 17.º/20.º).', a:'#cctv'},
+    auto:  {auth:true,  txt:'Decisões automatizadas (art. 29.º): contestação e revisão humana, ou autorização.', a:'#scoring'},
+    inter: {auth:true,  txt:'Interconexão de ficheiros de responsáveis diferentes (art. 24.º).', a:'#notificar-autorizar'},
+    mkt:   {auth:false, txt:'Marketing eletrónico (art. 19.º): consentimento e notificação, com opt-out.', a:'#marketing'}
+  };
+  var form = document.getElementById('verificador');
+  var out = document.getElementById('verdict');
+  function render(){
+    var picked = Array.prototype.filter.call(form.querySelectorAll('input'), function(i){ return i.checked; })
+                 .map(function(i){ return RULES[i.value]; });
+    var auth = picked.some(function(r){ return r.auth; });
+    out.className = 'verdict' + (auth ? ' auth' : '');
+    out.textContent = '';
+    var t = document.createElement('p'); t.className = 'v-title';
+    t.textContent = auth ? 'Autorização prévia: não lances sem ela' : 'Notificação simples à APD';
+    out.appendChild(t);
+    if(!picked.length){
+      var p = document.createElement('p'); p.style.margin = 0; p.style.fontSize = '.93rem';
+      p.textContent = 'Para dados pessoais comuns, notifica a APD antes de começar. A APD tem 30 dias para responder.';
+      out.appendChild(p); return;
+    }
+    var ul = document.createElement('ul');
+    picked.forEach(function(r){
+      var li = document.createElement('li'), a = document.createElement('a');
+      a.href = r.a; a.textContent = r.txt; li.appendChild(a); ul.appendChild(li);
+    });
+    out.appendChild(ul);
+    var prec = picked.filter(function(r){ return r.prec; })[0];
+    if(prec){ var pp = document.createElement('p'); pp.className = 'prec'; pp.textContent = 'Precedente: ' + prec.prec; out.appendChild(pp); }
+  }
+  form.addEventListener('change', render); render();
+
+  // --- checklists com progresso guardado ---
+  document.querySelectorAll('[data-list]').forEach(function(list){
+    var key = 'apd4devs-' + list.dataset.list;
+    var boxes = list.querySelectorAll('input');
+    var counter = document.querySelector('[data-count="' + list.dataset.list + '"]');
+    var saved = store(function(){ return JSON.parse(localStorage.getItem(key)); }) || [];
+    boxes.forEach(function(b, i){ b.checked = !!saved[i]; });
+    function update(){
+      var state = Array.prototype.map.call(boxes, function(b){ return b.checked; });
+      var n = state.filter(Boolean).length;
+      counter.textContent = n + ' de ' + boxes.length + ' feitos' + (n === boxes.length ? ' — pronto.' : '');
+      store(function(){ localStorage.setItem(key, JSON.stringify(state)); });
+    }
+    list.addEventListener('change', update);
+    document.querySelector('[data-reset="' + list.dataset.list + '"]').addEventListener('click', function(){
+      boxes.forEach(function(b){ b.checked = false; }); update();
+    });
+    update();
+  });
+
+  // --- filtro de multas ---
+  var fbtns = document.querySelectorAll('[data-filter]');
+  fbtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var f = btn.dataset.filter;
+      fbtns.forEach(function(b){ b.setAttribute('aria-pressed', b === btn); });
+      document.querySelectorAll('.fine').forEach(function(li){
+        li.hidden = f !== 'all' && li.dataset.tags.split(' ').indexOf(f) < 0;
       });
     });
   });
 
-  // highlight active TOC entry on scroll
-  var sections = Array.from(document.querySelectorAll('main section, main .tldr'));
-  var links = Array.from(document.querySelectorAll('nav.toc a'));
-  function onScroll(){
-    var pos = window.scrollY + 120;
-    var current = sections[0];
-    sections.forEach(function(s){ if(s.offsetTop <= pos) current = s; });
-    links.forEach(function(l){
-      l.classList.toggle('active', l.getAttribute('href') === '#' + current.id);
-    });
-  }
-  document.addEventListener('scroll', onScroll);
-  onScroll();
-</script>
+  // --- "sugerir correção" abre issue pré-preenchida ---
+  document.querySelectorAll('.suggest').forEach(function(a){
+    a.href = GH + '/issues/new?template=correcao.yml&title=' + encodeURIComponent('[' + a.dataset.sec + '] ');
+    a.target = '_blank'; a.rel = 'noopener';
+  });
 
+  // --- índice ativo + progresso de leitura ---
+  var links = Array.prototype.slice.call(document.querySelectorAll('.toc a'));
+  var bar = document.getElementById('read-progress');
+  if('IntersectionObserver' in window){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if(e.isIntersecting) links.forEach(function(l){ l.classList.toggle('active', l.getAttribute('href') === '#' + e.target.id); });
+      });
+    }, {rootMargin:'-20% 0px -70% 0px'});
+    document.querySelectorAll('main section[id]').forEach(function(s){ io.observe(s); });
+  }
+  var mainEl = document.getElementById('guia');
+  document.addEventListener('scroll', function(){
+    var r = mainEl.getBoundingClientRect();
+    var p = Math.min(1, Math.max(0, -r.top / (r.height - innerHeight)));
+    bar.style.width = (p * 100) + '%';
+  }, {passive:true});
+
+  // --- GitHub: estrelas e perguntas (API pública, 60 pedidos/h por IP) ---
+  function gh(path, cb){
+    var k = 'apd4devs-gh-' + path, hit = store(function(){ return JSON.parse(sessionStorage.getItem(k)); });
+    if(hit) return cb(hit);
+    fetch('https://api.github.com/repos/' + REPO + path, {headers:{Accept:'application/vnd.github+json'}})
+      .then(function(r){ if(!r.ok) throw r.status; return r.json(); })
+      .then(function(d){ store(function(){ sessionStorage.setItem(k, JSON.stringify(d)); }); cb(d); })
+      .catch(function(){ cb(null); });
+  }
+  gh('', function(d){
+    if(!d) return;
+    document.querySelectorAll('.star-count').forEach(function(s){ s.textContent = d.stargazers_count; s.hidden = false; });
+  });
+  gh('/issues?labels=pergunta&state=all&per_page=6', function(list){
+    var ul = document.getElementById('issues'); ul.textContent = '';
+    function msg(t){ var li = document.createElement('li'), s = document.createElement('span'); s.className = 'empty'; s.textContent = t; li.appendChild(s); ul.appendChild(li); }
+    if(!list) return msg('Não foi possível carregar as perguntas agora. Vê-as diretamente no GitHub.');
+    list = list.filter(function(i){ return !i.pull_request; });
+    if(!list.length) return msg('Ainda não há perguntas. Sê o primeiro a perguntar.');
+    list.forEach(function(i){
+      var li = document.createElement('li'), a = document.createElement('a'), m = document.createElement('span');
+      a.href = i.html_url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = i.title;
+      m.className = 'meta';
+      m.textContent = (i.state === 'closed' ? 'respondida' : 'aberta') + ' · ' + i.comments + (i.comments === 1 ? ' resposta' : ' respostas');
+      li.appendChild(a); li.appendChild(m); ul.appendChild(li);
+    });
+  });
+})();
+</script>
 </body>
 </html>

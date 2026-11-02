@@ -1,0 +1,27 @@
+name: Correção ou novidade
+description: Um erro no guia, uma multa nova da APD, uma mudança na lei ou um link partido
+labels: ["correcao"]
+body:
+  - type: dropdown
+    id: tipo
+    attributes:
+      label: Tipo
+      options:
+        - Erro no conteúdo
+        - Multa ou deliberação nova da APD
+        - Mudança legislativa
+        - Link partido
+        - Sugestão de conteúdo
+    validations:
+      required: true
+  - type: textarea
+    id: descricao
+    attributes:
+      label: O que está errado ou falta
+    validations:
+      required: true
+  - type: input
+    id: fonte
+    attributes:
+      label: Fonte
+      description: Link para a deliberação, o Diário da República ou a notícia. Correções sem fonte demoram mais a entrar.
